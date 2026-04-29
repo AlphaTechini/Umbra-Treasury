@@ -18,8 +18,12 @@ To find toast state logic, visit [toasts.ts](file:///C:/Hackathons/Umbra%20SDK/a
 
 To find loading state logic, visit [loading.ts](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/loading.ts).
 
+To find Umbra SDK integration logic, visit [umbra/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/umbra/README.md).
+
 To find reusable UI components, visit [components/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/components/README.md).
 
 ## Component Connections
 
 The component library can be found in [components](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/components).
+
+The Umbra frontend integration can be found in [umbra](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/umbra).

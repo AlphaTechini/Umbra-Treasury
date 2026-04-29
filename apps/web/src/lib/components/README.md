@@ -16,6 +16,10 @@ To find sidebar navigation logic, visit [Sidebar.svelte](file:///C:/Hackathons/U
 
 To find toast display logic, visit [ToastContainer.svelte](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/components/ToastContainer.svelte).
 
+To find the reusable Umbra operation status panel, visit [UmbraStatusPanel.svelte](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/components/UmbraStatusPanel.svelte).
+
 ## Component Connections
 
 The shared frontend library can be found in [../README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/README.md).
+
+The Umbra operation status component can be found in [UmbraStatusPanel.svelte](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/components/UmbraStatusPanel.svelte).

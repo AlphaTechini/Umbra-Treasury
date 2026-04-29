@@ -34,6 +34,9 @@
 |       `-- src/
 |           |-- README.md
 |           |-- lib/
+|           |   |-- README.md
+|           |   |-- components/
+|           |   `-- umbra/
 |           `-- routes/
 |-- migrations/
 |   |-- README.md
@@ -105,6 +108,8 @@ The frontend pages can be found in [apps/web/src/routes/README.md](file:///C:/Ha
 
 The frontend shared components can be found in [apps/web/src/lib/components/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/components/README.md).
 
+The frontend Umbra SDK integration can be found in [apps/web/src/lib/umbra/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/umbra/README.md).
+
 The Umbra resource list can be found in [Resources.md](./Resources.md).
 
 ## Folder READMEs
@@ -122,6 +127,8 @@ The `apps/web/src` folder README can be found in [apps/web/src/README.md](file:/
 The `apps/web/src/lib` folder README can be found in [apps/web/src/lib/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/README.md).
 
 The `apps/web/src/lib/components` folder README can be found in [apps/web/src/lib/components/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/components/README.md).
+
+The `apps/web/src/lib/umbra` folder README can be found in [apps/web/src/lib/umbra/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/umbra/README.md).
 
 The `apps/web/src/routes` folder README can be found in [apps/web/src/routes/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/routes/README.md).
 

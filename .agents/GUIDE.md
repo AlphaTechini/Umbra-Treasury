@@ -83,6 +83,7 @@ Current frontend structure:
 
 - routes own pages and SvelteKit server endpoints.
 - lib owns shared helpers, loading state, toasts, and reusable components.
+- `apps/web/src/lib/umbra` owns route-agnostic Umbra SDK client/session helpers, encrypted balance operations, and compliance grant helpers.
 - SvelteKit uses `@sveltejs/adapter-vercel`.
 - Gemini insight generation must read `GEMINI_API_KEY` through SvelteKit private environment access only.
 
@@ -151,6 +152,15 @@ Initial real Umbra focus:
 - query encrypted balance
 - withdraw from encrypted balance
 - implement compliance disclosure using Umbra's actual compliance primitives
+
+Frontend Umbra SDK integration now starts in `apps/web/src/lib/umbra` and intentionally avoids route-page wiring until the pages are ready.
+
+Required public frontend env values for real Umbra client creation:
+
+- `PUBLIC_UMBRA_NETWORK`
+- `PUBLIC_UMBRA_RPC_HTTP_URL`
+- `PUBLIC_UMBRA_RPC_WS_URL`
+- `PUBLIC_UMBRA_INDEXER_URL` when mixer/indexer features are used
 
 Treat full mixer usage as later unless judging requirements demand it. Mixer integration adds indexer, relayer, and ZK prover complexity.
 
