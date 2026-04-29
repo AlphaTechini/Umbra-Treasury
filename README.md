@@ -196,7 +196,7 @@ Report generated and access logged
 
 - Frontend: SvelteKit + Tailwind
 - Backend: Fastify (Node.js)
-- Database: PostgreSQL (Prisma ORM)
+- Database: PostgreSQL (Drizzle ORM)
 - Wallet Auth: Solana Wallet Adapter
 - Privacy Layer: Umbra SDK
 - Package Manager: pnpm
@@ -206,6 +206,13 @@ Report generated and access logged
 ## Project Structure
 
 See [structure.md](./structure.md) for the current folder and logic map.
+
+Backend implementation:
+
+- [apps/api](./apps/api) contains the Fastify backend.
+- [apps/api/src/routes](./apps/api/src/routes) exposes the current HTTP API surface.
+- [apps/api/src/services](./apps/api/src/services) coordinates workflow logic.
+- [apps/api/src/providers](./apps/api/src/providers) contains the Umbra provider boundary and mock fallback.
 
 Core planning docs:
 
@@ -229,6 +236,28 @@ Core planning docs:
 8. Use Umbra-aligned compliance disclosure or clearly labeled mock fallback.
 9. Generate auditor and tax-style reports.
 10. Show the access log trail.
+
+## Backend API Status
+
+The backend now exposes the first MVP vertical slice:
+
+- user creation and lookup by wallet address
+- DAO creation and lookup by slug
+- treasury transaction metadata creation and listing
+- public DAO summary generation
+- disclosure request submission and owner review
+- mock/source-labeled report generation
+- DAO report listing and report lookup
+- access log listing
+
+Run the backend with:
+
+```powershell
+pnpm install
+$env:DATABASE_URL="postgresql://user:password@localhost:5432/umbra_treasury?schema=public&sslmode=require"
+pnpm db:migrate
+pnpm dev:api
+```
 
 ---
 

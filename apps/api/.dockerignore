@@ -1,0 +1,12 @@
+.git
+.agents
+node_modules
+apps/*/node_modules
+apps/api/dist
+.env
+.env.*
+!.env.example
+coverage
+*.log
+.vercel
+.svelte-kit

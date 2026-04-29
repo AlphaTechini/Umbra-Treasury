@@ -67,6 +67,20 @@ Preferred shape:
 
 This keeps product workflow code separate from protocol-specific calls and protects the demo from SDK or network issues without pretending mock privacy is real privacy.
 
+Backend implementation now lives in `apps/api` as a Fastify workspace.
+
+Current backend structure:
+
+- routes own HTTP request validation and response shape.
+- services own workflow decisions and access-log coordination.
+- repositories own Drizzle queries.
+- providers own the Umbra integration boundary.
+- config owns environment parsing.
+
+Drizzle is the backend ORM. The schema lives in `apps/api/src/db/schema.ts`, migrations live in `migrations`, and `drizzle.config.ts` controls migration tooling.
+
+The backend Dockerfile uses a multi-stage build and does not require database credentials during image build.
+
 ## MVP Scope
 
 Build the MVP around these entities:
@@ -142,7 +156,7 @@ Frontend:
 Backend:
 
 - Fastify on Node.js unless a Go backend is explicitly chosen later.
-- Prisma with PostgreSQL.
+- Drizzle ORM with PostgreSQL.
 - Backend Dockerfile only.
 - No Docker Compose unless explicitly requested.
 
