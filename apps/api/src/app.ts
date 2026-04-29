@@ -27,6 +27,12 @@ export async function buildApp(): Promise<FastifyInstance> {
       return reply.status(400).send({ error: "Invalid request payload" });
     }
 
+    const clientErrorStatus = getClientErrorStatus(error);
+
+    if (clientErrorStatus) {
+      return reply.status(clientErrorStatus).send({ error: getErrorMessage(error) });
+    }
+
     app.log.error(error);
     return reply.status(500).send({ error: "Internal server error" });
   });
@@ -40,4 +46,22 @@ export async function buildApp(): Promise<FastifyInstance> {
   await registerAccessLogRoutes(app);
 
   return app;
+}
+
+function getClientErrorStatus(error: unknown): number | null {
+  if (!error || typeof error !== "object" || !("statusCode" in error)) {
+    return null;
+  }
+
+  const { statusCode } = error;
+
+  if (typeof statusCode !== "number" || statusCode < 400 || statusCode >= 500) {
+    return null;
+  }
+
+  return statusCode;
+}
+
+function getErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : "Invalid request";
 }

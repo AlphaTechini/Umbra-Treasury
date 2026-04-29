@@ -4,26 +4,26 @@
 	import { fade } from 'svelte/transition';
 	import { navigating } from '$app/stores';
 	import ToastContainer from '$lib/components/ToastContainer.svelte';
-	
+
 	let { children } = $props();
 
-	// Show loading if either manual isLoading is true or SvelteKit is navigating
 	let showLoading = $derived($isLoading || !!$navigating);
 </script>
 
 <svelte:head>
 	<title>Umbra Treasury</title>
+	<meta name="description" content="Institutional-grade private treasury management with selective transparency for DAOs." />
 </svelte:head>
 
-<div class="min-h-screen bg-[#050505] text-[#e0e0e0] font-sans selection:bg-purple-500/30 relative overflow-x-hidden">
+<div class="min-h-screen bg-[#09090b] text-[#e3e1ec] font-sans selection:bg-emerald-500/30 relative overflow-x-hidden">
 	<ToastContainer />
 
 	{#if showLoading}
-		<div 
+		<div
 			class="fixed top-0 left-0 w-full h-1 z-[100] bg-zinc-900 overflow-hidden"
 			transition:fade={{ duration: 200 }}
 		>
-			<div class="h-full bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 w-1/3 animate-loading-slide shadow-[0_0_10px_rgba(168,85,247,0.5)]"></div>
+			<div class="h-full bg-gradient-to-r from-emerald-500 via-emerald-400 to-emerald-500 w-1/3 animate-loading-slide shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
 		</div>
 	{/if}
 
@@ -35,7 +35,7 @@
 <style>
 	:global(body) {
 		margin: 0;
-		background-color: #050505;
+		background-color: #09090b;
 	}
 
 	@keyframes -global-loading-slide {

@@ -14,6 +14,8 @@ The tradeoff is more files than a small demo server, but it keeps the backend al
 
 To find the app composition, visit [app.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/app.ts).
 
+To find global client error response handling, visit [app.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/app.ts).
+
 To find the process entrypoint, visit [server.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/server.ts).
 
 To find configuration loading, visit [config/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/config/README.md).

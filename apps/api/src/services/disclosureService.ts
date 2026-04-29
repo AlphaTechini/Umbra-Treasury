@@ -7,6 +7,7 @@ import {
 } from "../repositories/disclosureRequestRepository.js";
 import { upsertUser } from "../repositories/userRepository.js";
 import { badRequest, forbidden, notFound } from "../utils/apiError.js";
+import { type WalletAuthorization, verifyWalletAuthorization } from "../utils/walletAuthorization.js";
 import { requireDaoById } from "./daoService.js";
 import { mapDisclosureMethod, mapDisclosureReason, mapDisclosureScope, mapDisclosureStatus } from "./enumMappers.js";
 
@@ -25,6 +26,7 @@ export type CreateDisclosureRequestBody = {
 
 export type ReviewDisclosureRequestBody = {
   reviewerWalletAddress: string;
+  walletAuthorization: WalletAuthorization;
   reviewerUsername?: string | undefined;
   status: string;
   disclosureMethod?: string | undefined;
@@ -68,6 +70,13 @@ export async function getDaoDisclosureRequests(daoId: string) {
 }
 
 export async function reviewDisclosure(daoId: string, requestId: string, input: ReviewDisclosureRequestBody) {
+  verifyWalletAuthorization(input.walletAuthorization, {
+    action: "disclosure:review",
+    walletAddress: input.reviewerWalletAddress,
+    daoId,
+    requestId,
+  });
+
   const dao = await requireDaoById(daoId);
   const request = await findDisclosureRequestById(requestId);
 

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-dim": "#12131a",
+            "on-primary-fixed-variant": "#005236",
+            "on-tertiary-fixed-variant": "#842225",
+            "on-primary-fixed": "#002113",
+            "tertiary-fixed": "#ffdad7",
+            "secondary-fixed": "#e2e2e2",
+            "on-surface": "#e3e1ec",
+            "primary-container": "#10b981",
+            "secondary-container": "#454747",
+            "outline": "#86948a",
+            "surface-container-highest": "#33343c",
+            "surface-container": "#1e1f26",
+            "surface": "#12131a",
+            "error-container": "#93000a",
+            "error": "#ffb4ab",
+            "tertiary": "#ffb3af",
+            "primary": "#4edea3",
+            "on-tertiary": "#650911",
+            "surface-container-lowest": "#0d0e15",
+            "outline-variant": "#3c4a42",
+            "surface-variant": "#33343c",
+            "on-primary": "#003824",
+            "on-secondary-container": "#b4b5b5",
+            "on-error-container": "#ffdad6",
+            "primary-fixed-dim": "#4edea3",
+            "surface-bright": "#383941",
+            "on-error": "#690005",
+            "on-secondary-fixed-variant": "#454747",
+            "inverse-on-surface": "#2f3038",
+            "on-tertiary-fixed": "#410005",
+            "on-secondary-fixed": "#1a1c1c",
+            "surface-container-high": "#292931",
+            "on-primary-container": "#00422b",
+            "primary-fixed": "#6ffbbe",
+            "secondary-fixed-dim": "#c6c6c7",
+            "secondary": "#c6c6c7",
+            "on-background": "#e3e1ec",
+            "inverse-primary": "#006c49",
+            "on-tertiary-container": "#711419",
+            "inverse-surface": "#e3e1ec",
+            "tertiary-fixed-dim": "#ffb3af",
+            "on-surface-variant": "#bbcabf",
+            "surface-tint": "#4edea3",
+            "on-secondary": "#2f3131",
+            "background": "#12131a",
+            "tertiary-container": "#fc7c78",
+            "surface-container-low": "#1a1b22"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "container-max": "1280px",
+            "lg": "24px",
+            "gutter": "24px",
+            "xs": "4px",
+            "sm": "8px",
+            "unit": "4px",
+            "md": "16px",
+            "xl": "48px"
+          },
+          "fontFamily": {
+            "body-lg": ["Inter"],
+            "body-md": ["Inter"],
+            "h1": ["Inter"],
+            "label-mono": ["Space Grotesk"],
+            "h2": ["Inter"],
+            "data-point": ["Inter"],
+            "h3": ["Inter"]
+          },
+          "fontSize": {
+            "body-lg": ["18px", {"lineHeight": "1.5", "letterSpacing": "-0.02em", "fontWeight": "400"}],
+            "body-md": ["14px", {"lineHeight": "1.5", "letterSpacing": "-0.01em", "fontWeight": "400"}],
+            "h1": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "600"}],
+            "label-mono": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500"}],
+            "h2": ["30px", {"lineHeight": "1.2", "letterSpacing": "-0.03em", "fontWeight": "600"}],
+            "data-point": ["14px", {"lineHeight": "1", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+            "h3": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.03em", "fontWeight": "500"}]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    body {
+      background-color: #09090b;
+      color: #fafafa;
+    }
+  </style>
+</head>
+<body class="flex min-h-screen font-body-md overflow-hidden">
+<!-- SideNavBar -->
+<aside class="bg-zinc-950 dark:bg-zinc-950 border-r border-zinc-800 dark:border-zinc-800 w-64 h-screen flex flex-col py-6 px-4 space-y-2 shrink-0">
+<div class="flex items-center space-x-3 mb-8 px-2">
+<div class="w-8 h-8 bg-emerald-500 rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-zinc-950" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+</div>
+<div>
+<h1 class="text-lg font-black text-emerald-500 dark:text-emerald-400 leading-none">Umbra</h1>
+<p class="text-[10px] font-sans font-medium uppercase tracking-widest text-zinc-500">Mainnet</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center space-x-3 px-3 py-2 text-zinc-500 dark:text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900/50 transition-all rounded font-sans text-xs font-medium uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-zinc-500 dark:text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900/50 transition-all rounded font-sans text-xs font-medium uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span>Treasury</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 bg-zinc-900 text-emerald-400 border-r-2 border-emerald-500 transition-all font-sans text-xs font-medium uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span>Reports</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-zinc-500 dark:text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900/50 transition-all rounded font-sans text-xs font-medium uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+<span>Governance</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-zinc-500 dark:text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900/50 transition-all rounded font-sans text-xs font-medium uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined" data-icon="show_chart">show_chart</span>
+<span>Staking</span>
+</a>
+</nav>
+<div class="pt-6 border-t border-zinc-800 space-y-1">
+<a class="flex items-center space-x-3 px-3 py-2 text-zinc-500 dark:text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900/50 transition-all rounded font-sans text-xs font-medium uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span>Support</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-zinc-500 dark:text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900/50 transition-all rounded font-sans text-xs font-medium uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+<span>Documentation</span>
+</a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col h-screen overflow-hidden bg-zinc-950">
+<!-- TopAppBar -->
+<header class="bg-zinc-950 dark:bg-zinc-950 border-b border-zinc-800 dark:border-zinc-800 flex justify-between items-center w-full px-6 py-2 h-16 shrink-0">
+<div class="flex items-center space-x-4">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-sm">search</span>
+<input class="bg-zinc-950 border border-zinc-800 rounded-md py-1.5 pl-9 pr-4 text-xs font-body-md focus:outline-none focus:border-white transition-colors w-64" placeholder="Search transactions..." type="text"/>
+</div>
+</div>
+<div class="flex items-center space-x-4">
+<div class="flex space-x-2">
+<button class="p-2 text-zinc-400 hover:bg-zinc-900 transition-colors rounded">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-zinc-400 hover:bg-zinc-900 transition-colors rounded">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+<button class="bg-emerald-500 text-zinc-950 font-bold px-4 py-2 text-xs rounded uppercase tracking-tighter hover:bg-emerald-400 transition-all active:opacity-80">
+          Connect Wallet
+        </button>
+<div class="w-8 h-8 bg-zinc-800 rounded-full border border-zinc-700 overflow-hidden">
+<img alt="DAO Avatar" class="w-full h-full object-cover" data-alt="Abstract geometric avatar icon with digital glitch aesthetics in neon green and black" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXtqmr8f_IltR2LLBJxkj-y7C7t9tDy3YbW3i508sKP9PqQhummHkvwmJJCOMHqqvfI6zAXqFVBuO28VKZcYw4IzI29er5bJZd7a5QQi6JyPe1olyuox7k-eEZQaffuR1tB3A1rrn6FOG3Js-xOv-uZP01vbPRFzME7zPjhpXYNXx_JgGU6afk1cCGIzky3vJnhuWC_4rQaaPcPAZMAWikL2GIw2rTNgfequEFCRPHjcUoL460pLpCGlvj1Of-Jn9zRzOJ2YtlJFBY"/>
+</div>
+</div>
+</header>
+<!-- Content Area -->
+<div class="flex-1 overflow-y-auto p-gutter lg:p-lg space-y-lg">
+<!-- Page Header -->
+<div class="flex justify-between items-end">
+<div>
+<span class="font-label-mono text-emerald-500 uppercase">Treasury Reports</span>
+<h2 class="font-h2 text-on-background mt-xs">Financial Overview</h2>
+</div>
+<div class="flex bg-zinc-900 rounded p-1 border border-zinc-800">
+<button class="px-4 py-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-200 transition-colors">Public Summary</button>
+<button class="px-4 py-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-200 transition-colors">Auditor Report</button>
+<button class="px-4 py-1.5 text-xs font-medium text-emerald-400 bg-zinc-950 border border-zinc-800 rounded shadow-sm">Tax Estimate</button>
+</div>
+</div>
+<!-- Bento Grid Content -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Primary Financial Summary Card -->
+<div class="col-span-12 lg:col-span-8 bg-surface-container border border-outline-variant p-lg rounded-lg flex flex-col space-y-xl">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-h3 text-on-surface">Taxable Financial Summary</h3>
+<p class="text-on-surface-variant text-body-md mt-1">Fiscal Year 2024 (Q1-Q3 projections)</p>
+</div>
+<button class="bg-emerald-500 text-zinc-950 px-6 py-2.5 rounded font-bold text-sm tracking-tight flex items-center space-x-2 hover:bg-emerald-400 transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="file_download">file_download</span>
+<span>Export Report</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg border-y border-outline-variant py-xl">
+<div class="space-y-sm">
+<p class="font-label-mono text-zinc-500 uppercase tracking-widest">Total Income</p>
+<p class="font-h2 text-on-background tracking-tighter">$142,850</p>
+<div class="flex items-center space-x-2">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span class="text-xs text-emerald-500">+12.4% from last period</span>
+</div>
+</div>
+<div class="space-y-sm">
+<p class="font-label-mono text-zinc-500 uppercase tracking-widest">Total Expenses</p>
+<p class="font-h2 text-on-background tracking-tighter">$48,220</p>
+<div class="flex items-center space-x-2">
+<span class="w-1.5 h-1.5 rounded-full bg-zinc-500"></span>
+<span class="text-xs text-zinc-500">85 transactions processed</span>
+</div>
+</div>
+<div class="space-y-sm">
+<p class="font-label-mono text-zinc-500 uppercase tracking-widest">Taxable Amount</p>
+<p class="font-h2 text-emerald-500 tracking-tighter">$94,630</p>
+<div class="flex items-center space-x-2">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span class="text-xs text-emerald-500">Net Treasury Growth</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col md:flex-row md:items-end justify-between pt-md space-y-lg md:space-y-0">
+<div class="space-y-md w-full md:w-1/3">
+<label class="font-label-mono text-zinc-500 uppercase tracking-widest block">Tax Rate Input</label>
+<div class="relative">
+<input class="w-full bg-zinc-950 border border-outline-variant rounded p-3 text-on-surface font-h3 focus:border-white focus:ring-0 transition-colors" type="text" value="15%"/>
+<div class="absolute right-3 top-1/2 -translate-y-1/2 flex space-x-1">
+<button class="p-1 hover:text-emerald-500"><span class="material-symbols-outlined text-[18px]">add_circle</span></button>
+<button class="p-1 hover:text-emerald-500"><span class="material-symbols-outlined text-[18px]">do_not_disturb_on</span></button>
+</div>
+</div>
+</div>
+<div class="bg-zinc-900 border border-emerald-500/30 p-lg rounded w-full md:w-1/2 flex justify-between items-center">
+<div>
+<p class="font-label-mono text-emerald-500 uppercase tracking-widest">Estimated Tax</p>
+<p class="text-[36px] font-black text-on-background leading-none mt-1 tracking-tighter">$14,194</p>
+</div>
+<div class="w-12 h-12 rounded-full border-4 border-emerald-500 flex items-center justify-center">
+<span class="material-symbols-outlined text-emerald-500" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Secondary Insights Column -->
+<div class="col-span-12 lg:col-span-4 space-y-gutter">
+<!-- Tax Compliance Status -->
+<div class="bg-surface-container border border-outline-variant p-lg rounded-lg">
+<h4 class="font-label-mono text-on-surface-variant uppercase tracking-widest mb-md">Compliance Status</h4>
+<div class="space-y-md">
+<div class="flex items-center justify-between p-md bg-zinc-950 border border-outline-variant rounded">
+<div class="flex items-center space-x-3">
+<span class="w-2 h-2 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+<span class="text-body-md font-medium">IRS Form 1099-NEC</span>
+</div>
+<span class="text-xs font-label-mono text-emerald-500">READY</span>
+</div>
+<div class="flex items-center justify-between p-md bg-zinc-950 border border-outline-variant rounded">
+<div class="flex items-center space-x-3">
+<span class="w-2 h-2 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+<span class="text-body-md font-medium">Crypto Assets Basis</span>
+</div>
+<span class="text-xs font-label-mono text-emerald-500">SYNCED</span>
+</div>
+<div class="flex items-center justify-between p-md bg-zinc-950 border border-outline-variant rounded">
+<div class="flex items-center space-x-3">
+<span class="w-2 h-2 bg-zinc-600 rounded-full"></span>
+<span class="text-body-md font-medium">Auditor Verification</span>
+</div>
+<span class="text-xs font-label-mono text-zinc-500">PENDING</span>
+</div>
+</div>
+</div>
+<!-- Quick Actions / Visual -->
+<div class="bg-zinc-900 border border-outline-variant rounded-lg overflow-hidden relative group">
+<div class="absolute inset-0 bg-gradient-to-t from-emerald-500/10 to-transparent opacity-50"></div>
+<img class="w-full h-40 object-cover opacity-60" data-alt="Minimalist 3D data nodes interconnected with emerald green lines on a deep black technical background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuGeFKKnKIRqDbrKiw0VwI2qhbSGQk982hIFrKovRhxyFFtltpLwpNemNLSmXAEgZRJdl94B1Ow1BCxaXk34aQUB1jind8iMO-nUKKwC_YAxVefqZq86P9-8tkRGKgjAW5x0YoGOCpTFXjUJ0IJGUNxtd4VrKtfkMZ8BjzFPtIUFR72TEvSpmg9jmFeNpkXjrnx-gOTO1TH_to7copp54VeyBhx5U4Cl5ttOQ2qEN7CMXO1sOod7c21UmjMzA5XkQqN7sawoK7HqUO"/>
+<div class="p-lg relative">
+<h4 class="font-h3 text-white mb-2">Automated Filing</h4>
+<p class="text-zinc-400 text-body-md mb-md">Connect your legal entity to automate quarterly tax provisions directly from the treasury.</p>
+<button class="w-full py-2 bg-zinc-950 border border-emerald-500 text-emerald-500 font-bold rounded uppercase text-[10px] tracking-widest hover:bg-emerald-500 hover:text-zinc-950 transition-all">Configure Entity</button>
+</div>
+</div>
+</div>
+<!-- Recent Ledger Entries -->
+<div class="col-span-12 bg-surface-container border border-outline-variant rounded-lg overflow-hidden">
+<div class="px-lg py-md border-b border-outline-variant flex justify-between items-center">
+<h4 class="font-label-mono text-zinc-400 uppercase tracking-widest">Recent Taxable Ledger</h4>
+<button class="text-xs text-emerald-500 hover:underline">View All Entries</button>
+</div>
+<table class="w-full text-left text-body-md">
+<thead>
+<tr class="bg-zinc-950 text-zinc-500 font-label-mono text-[10px] uppercase tracking-widest">
+<th class="px-lg py-3 font-medium">Transaction ID</th>
+<th class="px-lg py-3 font-medium">Category</th>
+<th class="px-lg py-3 font-medium">Date</th>
+<th class="px-lg py-3 font-medium">Amount</th>
+<th class="px-lg py-3 font-medium text-right">Basis (USD)</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-zinc-800">
+<tr class="hover:bg-zinc-900/50 transition-colors">
+<td class="px-lg py-4 font-mono text-zinc-400">0x882...a4f2</td>
+<td class="px-lg py-4">Protocol Revenue</td>
+<td class="px-lg py-4 text-zinc-500">Oct 24, 2024</td>
+<td class="px-lg py-4 text-emerald-500 font-data-point">+12.5 ETH</td>
+<td class="px-lg py-4 text-right font-data-point">$31,250.00</td>
+</tr>
+<tr class="hover:bg-zinc-900/50 transition-colors">
+<td class="px-lg py-4 font-mono text-zinc-400">0x31a...92cc</td>
+<td class="px-lg py-4 text-error">Staking Yield</td>
+<td class="px-lg py-4 text-zinc-500">Oct 22, 2024</td>
+<td class="px-lg py-4 text-emerald-500 font-data-point">+4.2 ETH</td>
+<td class="px-lg py-4 text-right font-data-point">$10,500.00</td>
+</tr>
+<tr class="hover:bg-zinc-900/50 transition-colors">
+<td class="px-lg py-4 font-mono text-zinc-400">0xf1e...221b</td>
+<td class="px-lg py-4">Operational Expense</td>
+<td class="px-lg py-4 text-zinc-500">Oct 20, 2024</td>
+<td class="px-lg py-4 text-on-error font-data-point">-2.0 ETH</td>
+<td class="px-lg py-4 text-right font-data-point">($5,000.00)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+</body></html>

@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { desc, eq } from "drizzle-orm";
-import { db } from "../db/client.js";
+import { db, type DbExecutor } from "../db/client.js";
 import { accessLogs, users } from "../db/schema.js";
 
 export type CreateAccessLogInput = {
@@ -22,8 +22,8 @@ export type CreateAccessLogInput = {
   metadata?: Record<string, unknown> | undefined;
 };
 
-export async function createAccessLog(input: CreateAccessLogInput) {
-  const [accessLog] = await db
+export async function createAccessLog(input: CreateAccessLogInput, executor: DbExecutor = db) {
+  const [accessLog] = await executor
     .insert(accessLogs)
     .values({
       id: randomUUID(),

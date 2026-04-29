@@ -3,29 +3,40 @@ import { fulfillDisclosureRequest } from "../repositories/disclosureRequestRepos
 import { createReport, findReportById, listReportsForDao } from "../repositories/reportRepository.js";
 import { listTransactionsForDao } from "../repositories/transactionRepository.js";
 import { upsertUser } from "../repositories/userRepository.js";
+import { runDbTransaction } from "../db/client.js";
 import { createUmbraProvider } from "../providers/providerFactory.js";
 import { badRequest, forbidden, notFound } from "../utils/apiError.js";
+import { type WalletAuthorization, verifyWalletAuthorization } from "../utils/walletAuthorization.js";
 import { getPublicSummary } from "./summaryService.js";
 import { requireDisclosureRequest } from "./disclosureService.js";
 
 export type GenerateUmbraComplianceReportInput = {
   generatedByWalletAddress: string;
+  walletAuthorization: WalletAuthorization;
   generatedByUsername?: string | undefined;
-  providerReference: string;
-  verificationStatus?: "verified" | "unverified" | "failed" | undefined;
   grantTransactionSignature?: string | undefined;
   grantAccountAddress?: string | undefined;
-  granterX25519PublicKey?: string | undefined;
-  receiverX25519PublicKey?: string | undefined;
   nonce?: string | undefined;
   operationRefs: Record<string, unknown>;
   notes?: string[] | undefined;
 };
 
+export type GenerateMockDisclosureReportInput = {
+  generatedByWalletAddress: string;
+  walletAuthorization: WalletAuthorization;
+  generatedByUsername?: string | undefined;
+};
+
 export async function generateMockDisclosureReport(
   requestId: string,
-  input: { generatedByWalletAddress: string; generatedByUsername?: string | undefined },
+  input: GenerateMockDisclosureReportInput,
 ) {
+  verifyWalletAuthorization(input.walletAuthorization, {
+    action: "report:mock:create",
+    walletAddress: input.generatedByWalletAddress,
+    requestId,
+  });
+
   const request = await requireDisclosureRequest(requestId);
 
   if (request.status !== "approved") {
@@ -51,62 +62,79 @@ export async function generateMockDisclosureReport(
 
   const scopedTransactions = await getScopedTransactionsForDisclosure(request);
 
-  const report = await createReport({
-    daoId: request.daoId,
-    disclosureRequestId: request.id,
-    type: request.reason === "tax" ? "tax_estimate" : "auditor_report",
-    source: "mock",
-    verificationStatus: "unverified",
-    title: `${request.requesterName} disclosure report`,
-    startDate: request.startDate ?? undefined,
-    endDate: request.endDate ?? undefined,
-    generatedById: generator.id,
-    reportData: {
-      source: grant.source,
-      verificationStatus: grant.verificationStatus,
-      providerReference: grant.providerReference,
-      notes: grant.notes,
-      requestedScope: request.requestedScope,
-      transactionCount: scopedTransactions.length,
-      transactions: scopedTransactions.map((transaction: (typeof scopedTransactions)[number]) => ({
-        id: transaction.id,
-        type: transaction.type,
-        category: transaction.category,
-        token: transaction.token,
-        amountHint: transaction.amountHint,
-        date: transaction.date.toISOString(),
-        publicCounterpartyLabel: transaction.publicCounterpartyLabel,
-        publicMemo: transaction.publicMemo,
-        umbraOperationType: transaction.umbraOperationType,
-        privacyStatus: transaction.privacyStatus,
-      })),
-    },
-  });
+  return runDbTransaction(async (tx) => {
+    const report = await createReport(
+      {
+        daoId: request.daoId,
+        disclosureRequestId: request.id,
+        type: request.reason === "tax" ? "tax_estimate" : "auditor_report",
+        source: "mock",
+        verificationStatus: "unverified",
+        title: `${request.requesterName} disclosure report`,
+        startDate: request.startDate ?? undefined,
+        endDate: request.endDate ?? undefined,
+        generatedById: generator.id,
+        reportData: {
+          source: grant.source,
+          verificationStatus: grant.verificationStatus,
+          providerReference: grant.providerReference,
+          notes: grant.notes,
+          requestedScope: request.requestedScope,
+          transactionCount: scopedTransactions.length,
+          transactions: scopedTransactions.map((transaction: (typeof scopedTransactions)[number]) => ({
+            id: transaction.id,
+            type: transaction.type,
+            category: transaction.category,
+            token: transaction.token,
+            amountHint: transaction.amountHint,
+            date: transaction.date.toISOString(),
+            publicCounterpartyLabel: transaction.publicCounterpartyLabel,
+            publicMemo: transaction.publicMemo,
+            umbraOperationType: transaction.umbraOperationType,
+            privacyStatus: transaction.privacyStatus,
+          })),
+        },
+      },
+      tx,
+    );
 
-  await fulfillDisclosureRequest({
-    id: request.id,
-    fulfilledReportId: report.id,
-  });
+    await fulfillDisclosureRequest(
+      {
+        id: request.id,
+        fulfilledReportId: report.id,
+      },
+      tx,
+    );
 
-  await createAccessLog({
-    daoId: request.daoId,
-    actorId: generator.id,
-    action: "mock_disclosure_generated",
-    targetType: "report",
-    targetId: report.id,
-    metadata: {
-      disclosureRequestId: request.id,
-      providerReference: grant.providerReference,
-    },
-  });
+    await createAccessLog(
+      {
+        daoId: request.daoId,
+        actorId: generator.id,
+        action: "mock_disclosure_generated",
+        targetType: "report",
+        targetId: report.id,
+        metadata: {
+          disclosureRequestId: request.id,
+          providerReference: grant.providerReference,
+        },
+      },
+      tx,
+    );
 
-  return report;
+    return report;
+  });
 }
 
 export async function generateUmbraComplianceReport(
   requestId: string,
   input: GenerateUmbraComplianceReportInput,
 ) {
+  verifyWalletAuthorization(input.walletAuthorization, {
+    action: "report:umbra:create",
+    walletAddress: input.generatedByWalletAddress,
+    requestId,
+  });
+
   const request = await requireDisclosureRequest(requestId);
 
   if (request.status !== "approved") {
@@ -127,80 +155,105 @@ export async function generateUmbraComplianceReport(
   }
 
   const scopedTransactions = await getScopedTransactionsForDisclosure(request);
-  const verificationStatus = input.verificationStatus ?? "unverified";
+  const verificationStatus = "unverified";
+  const providerReference = getUmbraProviderReference(input);
 
-  await createAccessLog({
-    daoId: request.daoId,
-    actorId: generator.id,
-    action: "compliance_grant_issued",
-    targetType: "umbra_operation",
-    targetId: input.providerReference,
-    metadata: {
-      disclosureRequestId: request.id,
-      grantTransactionSignature: input.grantTransactionSignature ?? null,
-      grantAccountAddress: input.grantAccountAddress ?? null,
-      operationRefs: input.operationRefs,
-    },
+  return runDbTransaction(async (tx) => {
+    await createAccessLog(
+      {
+        daoId: request.daoId,
+        actorId: generator.id,
+        action: "compliance_grant_issued",
+        targetType: "umbra_operation",
+        targetId: providerReference,
+        metadata: {
+          disclosureRequestId: request.id,
+          grantTransactionSignature: input.grantTransactionSignature ?? null,
+          grantAccountAddress: input.grantAccountAddress ?? null,
+          operationRefs: input.operationRefs,
+        },
+      },
+      tx,
+    );
+
+    const report = await createReport(
+      {
+        daoId: request.daoId,
+        disclosureRequestId: request.id,
+        type: request.reason === "tax" ? "tax_estimate" : "auditor_report",
+        source: "umbra_compliance",
+        verificationStatus,
+        title: `${request.requesterName} Umbra compliance report`,
+        startDate: request.startDate ?? undefined,
+        endDate: request.endDate ?? undefined,
+        generatedById: generator.id,
+        reportData: {
+          source: "umbra_compliance",
+          verificationStatus,
+          providerReference,
+          grantTransactionSignature: input.grantTransactionSignature ?? null,
+          grantAccountAddress: input.grantAccountAddress ?? null,
+          nonce: input.nonce ?? null,
+          operationRefs: input.operationRefs,
+          notes: input.notes ?? [],
+          requestedScope: request.requestedScope,
+          transactionCount: scopedTransactions.length,
+          transactions: scopedTransactions.map((transaction: (typeof scopedTransactions)[number]) => ({
+            id: transaction.id,
+            type: transaction.type,
+            category: transaction.category,
+            token: transaction.token,
+            amountHint: transaction.amountHint,
+            date: transaction.date.toISOString(),
+            publicCounterpartyLabel: transaction.publicCounterpartyLabel,
+            publicMemo: transaction.publicMemo,
+            umbraOperationType: transaction.umbraOperationType,
+            privacyStatus: transaction.privacyStatus,
+          })),
+        },
+      },
+      tx,
+    );
+
+    await fulfillDisclosureRequest(
+      {
+        id: request.id,
+        fulfilledReportId: report.id,
+      },
+      tx,
+    );
+
+    await createAccessLog(
+      {
+        daoId: request.daoId,
+        actorId: generator.id,
+        action: "report_generated",
+        targetType: "report",
+        targetId: report.id,
+        metadata: {
+          disclosureRequestId: request.id,
+          source: "umbra_compliance",
+          providerReference,
+          verificationStatus,
+        },
+      },
+      tx,
+    );
+
+    return report;
   });
+}
 
-  const report = await createReport({
-    daoId: request.daoId,
-    disclosureRequestId: request.id,
-    type: request.reason === "tax" ? "tax_estimate" : "auditor_report",
-    source: "umbra_compliance",
-    verificationStatus,
-    title: `${request.requesterName} Umbra compliance report`,
-    startDate: request.startDate ?? undefined,
-    endDate: request.endDate ?? undefined,
-    generatedById: generator.id,
-    reportData: {
-      source: "umbra_compliance",
-      verificationStatus,
-      providerReference: input.providerReference,
-      grantTransactionSignature: input.grantTransactionSignature ?? null,
-      grantAccountAddress: input.grantAccountAddress ?? null,
-      granterX25519PublicKey: input.granterX25519PublicKey ?? null,
-      receiverX25519PublicKey: input.receiverX25519PublicKey ?? null,
-      nonce: input.nonce ?? null,
-      operationRefs: input.operationRefs,
-      notes: input.notes ?? [],
-      requestedScope: request.requestedScope,
-      transactionCount: scopedTransactions.length,
-      transactions: scopedTransactions.map((transaction: (typeof scopedTransactions)[number]) => ({
-        id: transaction.id,
-        type: transaction.type,
-        category: transaction.category,
-        token: transaction.token,
-        amountHint: transaction.amountHint,
-        date: transaction.date.toISOString(),
-        publicCounterpartyLabel: transaction.publicCounterpartyLabel,
-        publicMemo: transaction.publicMemo,
-        umbraOperationType: transaction.umbraOperationType,
-        privacyStatus: transaction.privacyStatus,
-      })),
-    },
-  });
+function getUmbraProviderReference(input: GenerateUmbraComplianceReportInput): string {
+  if (input.grantAccountAddress) {
+    return `umbra-compliance-grant:${input.grantAccountAddress}`;
+  }
 
-  await fulfillDisclosureRequest({
-    id: request.id,
-    fulfilledReportId: report.id,
-  });
+  if (input.grantTransactionSignature) {
+    return `umbra-compliance-tx:${input.grantTransactionSignature}`;
+  }
 
-  await createAccessLog({
-    daoId: request.daoId,
-    actorId: generator.id,
-    action: "report_generated",
-    targetType: "report",
-    targetId: report.id,
-    metadata: {
-      disclosureRequestId: request.id,
-      source: "umbra_compliance",
-      providerReference: input.providerReference,
-      verificationStatus,
-    },
-  });
-
-  return report;
+  throw badRequest("grantTransactionSignature or grantAccountAddress is required");
 }
 
 export async function generatePublicSummaryReport(

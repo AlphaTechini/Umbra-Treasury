@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { desc, eq } from "drizzle-orm";
-import { db } from "../db/client.js";
+import { db, type DbExecutor } from "../db/client.js";
 import { daos, disclosureRequests, reports } from "../db/schema.js";
 
 export type CreateReportInput = {
@@ -16,8 +16,8 @@ export type CreateReportInput = {
   reportData: Record<string, unknown>;
 };
 
-export async function createReport(input: CreateReportInput) {
-  const [report] = await db
+export async function createReport(input: CreateReportInput, executor: DbExecutor = db) {
+  const [report] = await executor
     .insert(reports)
     .values({
       id: randomUUID(),

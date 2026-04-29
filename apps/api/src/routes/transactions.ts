@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { addTreasuryTransaction, getDaoTransactions } from "../services/transactionService.js";
 import { parseBody, parseParams } from "../utils/validate.js";
+import { walletAuthorizationSchema } from "../utils/walletAuthorization.js";
 
 const daoIdParamsSchema = z.object({
   daoId: z.string().min(1),
@@ -9,6 +10,7 @@ const daoIdParamsSchema = z.object({
 
 const createTransactionSchema = z.object({
   createdByWalletAddress: z.string().min(1),
+  walletAuthorization: walletAuthorizationSchema,
   type: z.enum(["income", "expense", "transfer"]),
   category: z.enum(["grant", "payroll", "vendor", "ops", "tax", "treasury_transfer", "other"]),
   token: z.string().min(1),

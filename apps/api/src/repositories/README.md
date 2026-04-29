@@ -8,6 +8,8 @@ This folder contains database access modules for Drizzle tables.
 
 Repositories hide Drizzle query details from services. Services should decide workflow behavior, while repositories should only create, read, and update records.
 
+Report-related repositories accept an optional database executor so services can run report creation, disclosure fulfillment, and access-log writes in a single transaction.
+
 The tradeoff is a few small pass-through modules, but it keeps query shape changes localized when the schema evolves.
 
 ## Logic Tracking
@@ -24,6 +26,10 @@ To find report persistence logic, visit [reportRepository.ts](file:///C:/Hackath
 
 To find access log persistence logic, visit [accessLogRepository.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/repositories/accessLogRepository.ts).
 
+To find disclosure fulfillment persistence logic, visit [disclosureRequestRepository.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/repositories/disclosureRequestRepository.ts).
+
 ## Component Connections
 
 The Drizzle connection can be found in [client.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/db/client.ts).
+
+The transaction executor type can be found in [client.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/db/client.ts).

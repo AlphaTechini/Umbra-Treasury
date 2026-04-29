@@ -16,6 +16,10 @@ To find API error helpers, visit [apiError.ts](file:///C:/Hackathons/Umbra%20SDK
 
 To find Zod request parsing helpers, visit [validate.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/utils/validate.ts).
 
+To find wallet action signature verification, visit [walletAuthorization.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/utils/walletAuthorization.ts).
+
 ## Component Connections
 
 The API error system can be found in [apiError.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/utils/apiError.ts).
+
+The wallet authorization system can be found in [walletAuthorization.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/utils/walletAuthorization.ts).

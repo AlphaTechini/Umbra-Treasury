@@ -1,11 +1,14 @@
 import { createAccessLog } from "../repositories/accessLogRepository.js";
 import { createTransaction, listTransactionsForDao } from "../repositories/transactionRepository.js";
 import { upsertUser } from "../repositories/userRepository.js";
-import { requireDaoById } from "./daoService.js";
+import { forbidden } from "../utils/apiError.js";
+import { type WalletAuthorization, verifyWalletAuthorization } from "../utils/walletAuthorization.js";
 import { mapTransactionCategory, mapTransactionType, mapUmbraOperationType } from "./enumMappers.js";
+import { requireDaoById } from "./daoService.js";
 
 export type CreateTreasuryTransactionRequest = {
   createdByWalletAddress: string;
+  walletAuthorization: WalletAuthorization;
   type: string;
   category: string;
   token: string;
@@ -19,11 +22,21 @@ export type CreateTreasuryTransactionRequest = {
 };
 
 export async function addTreasuryTransaction(daoId: string, input: CreateTreasuryTransactionRequest) {
-  await requireDaoById(daoId);
+  verifyWalletAuthorization(input.walletAuthorization, {
+    action: "treasury_transaction:create",
+    walletAddress: input.createdByWalletAddress,
+    daoId,
+  });
+
+  const dao = await requireDaoById(daoId);
 
   const creator = await upsertUser({
     walletAddress: input.createdByWalletAddress,
   });
+
+  if (creator.id !== dao.ownerId) {
+    throw forbidden("Only the DAO owner can add treasury transactions");
+  }
 
   const transaction = await createTransaction({
     daoId,

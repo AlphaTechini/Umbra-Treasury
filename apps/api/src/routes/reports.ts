@@ -7,6 +7,7 @@ import {
   getReport,
 } from "../services/reportService.js";
 import { parseBody, parseParams } from "../utils/validate.js";
+import { walletAuthorizationSchema } from "../utils/walletAuthorization.js";
 
 const daoIdParamsSchema = z.object({
   daoId: z.string().min(1),
@@ -22,22 +23,24 @@ const requestIdParamsSchema = z.object({
 
 const generateMockReportSchema = z.object({
   generatedByWalletAddress: z.string().min(1),
+  walletAuthorization: walletAuthorizationSchema,
   generatedByUsername: z.string().min(1).optional(),
 });
 
-const generateUmbraComplianceReportSchema = z.object({
-  generatedByWalletAddress: z.string().min(1),
-  generatedByUsername: z.string().min(1).optional(),
-  providerReference: z.string().min(1),
-  verificationStatus: z.enum(["verified", "unverified", "failed"]).optional(),
-  grantTransactionSignature: z.string().min(1).optional(),
-  grantAccountAddress: z.string().min(1).optional(),
-  granterX25519PublicKey: z.string().min(1).optional(),
-  receiverX25519PublicKey: z.string().min(1).optional(),
-  nonce: z.string().min(1).optional(),
-  operationRefs: z.record(z.string(), z.unknown()).default({}),
-  notes: z.array(z.string().min(1)).optional(),
-});
+const generateUmbraComplianceReportSchema = z
+  .object({
+    generatedByWalletAddress: z.string().min(1),
+    walletAuthorization: walletAuthorizationSchema,
+    generatedByUsername: z.string().min(1).optional(),
+    grantTransactionSignature: z.string().min(1).optional(),
+    grantAccountAddress: z.string().min(1).optional(),
+    nonce: z.string().min(1).optional(),
+    operationRefs: z.record(z.string(), z.unknown()).default({}),
+    notes: z.array(z.string().min(1)).optional(),
+  })
+  .refine((body) => body.grantTransactionSignature || body.grantAccountAddress, {
+    message: "grantTransactionSignature or grantAccountAddress is required",
+  });
 
 export async function registerReportRoutes(app: FastifyInstance): Promise<void> {
   app.post("/disclosure-requests/:requestId/mock-report", async (request, reply) => {

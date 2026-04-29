@@ -14,6 +14,8 @@ The tradeoff is that validation schemas sit close to route handlers instead of a
 
 To find health routes, visit [health.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/routes/health.ts).
 
+To find database readiness routes, visit [health.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/routes/health.ts).
+
 To find user routes, visit [users.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/routes/users.ts).
 
 To find DAO routes, visit [daos.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/routes/daos.ts).

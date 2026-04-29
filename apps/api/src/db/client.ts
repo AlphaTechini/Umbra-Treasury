@@ -9,6 +9,16 @@ const pool = new Pool({
 
 export const db = drizzle(pool, { schema });
 
+export type DbExecutor = Pick<typeof db, "insert" | "select" | "update">;
+
+export async function runDbTransaction<T>(callback: (tx: DbExecutor) => Promise<T>): Promise<T> {
+  return db.transaction((tx) => callback(tx));
+}
+
+export async function checkDbReady(): Promise<void> {
+  await pool.query("select 1");
+}
+
 export async function disconnectDb(): Promise<void> {
   await pool.end();
 }

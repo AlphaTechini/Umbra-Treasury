@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Umbra Treasury - Public View</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-highest": "#33343c",
+                        "outline": "#86948a",
+                        "surface": "#12131a",
+                        "error-container": "#93000a",
+                        "error": "#ffb4ab",
+                        "surface-container": "#1e1f26",
+                        "tertiary": "#ffb3af",
+                        "primary": "#4edea3",
+                        "on-tertiary": "#650911",
+                        "surface-container-lowest": "#0d0e15",
+                        "outline-variant": "#3c4a42",
+                        "on-secondary-container": "#b4b5b5",
+                        "surface-variant": "#33343c",
+                        "on-primary": "#003824",
+                        "surface-dim": "#12131a",
+                        "on-primary-fixed-variant": "#005236",
+                        "on-tertiary-fixed-variant": "#842225",
+                        "on-primary-fixed": "#002113",
+                        "tertiary-fixed": "#ffdad7",
+                        "secondary-fixed": "#e2e2e2",
+                        "on-surface": "#e3e1ec",
+                        "secondary-container": "#454747",
+                        "primary-container": "#10b981",
+                        "inverse-primary": "#006c49",
+                        "secondary": "#c6c6c7",
+                        "on-background": "#e3e1ec",
+                        "inverse-surface": "#e3e1ec",
+                        "on-tertiary-container": "#711419",
+                        "tertiary-fixed-dim": "#ffb3af",
+                        "on-surface-variant": "#bbcabf",
+                        "on-secondary": "#2f3131",
+                        "background": "#12131a",
+                        "surface-tint": "#4edea3",
+                        "tertiary-container": "#fc7c78",
+                        "surface-container-low": "#1a1b22",
+                        "on-error-container": "#ffdad6",
+                        "primary-fixed-dim": "#4edea3",
+                        "on-secondary-fixed-variant": "#454747",
+                        "inverse-on-surface": "#2f3038",
+                        "surface-bright": "#383941",
+                        "on-error": "#690005",
+                        "surface-container-high": "#292931",
+                        "on-primary-container": "#00422b",
+                        "on-tertiary-fixed": "#410005",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "secondary-fixed-dim": "#c6c6c7",
+                        "primary-fixed": "#6ffbbe"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "md": "16px",
+                        "xl": "48px",
+                        "xs": "4px",
+                        "sm": "8px",
+                        "lg": "24px",
+                        "gutter": "24px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "h1": ["Inter"],
+                        "label-mono": ["Space Grotesk"],
+                        "h2": ["Inter"],
+                        "data-point": ["Inter"],
+                        "h3": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", { "lineHeight": "1.5", "letterSpacing": "-0.02em", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "1.5", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+                        "h1": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "600" }],
+                        "label-mono": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "h2": ["30px", { "lineHeight": "1.2", "letterSpacing": "-0.03em", "fontWeight": "600" }],
+                        "data-point": ["14px", { "lineHeight": "1", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "h3": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.03em", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<nav class="bg-[#09090b] font-['Inter'] antialiased w-full border-b border-[#27272a] flat no shadows hidden md:flex">
+<div class="flex justify-between items-center h-16 px-6 w-full max-w-container-max mx-auto">
+<div class="text-xl font-bold tracking-tighter text-white">
+                Umbra Treasury
+            </div>
+<div class="flex gap-lg h-full items-center">
+<a class="text-[#a1a1aa] hover:text-white transition-colors h-full flex items-center hover:bg-[#18181b] transition-all duration-200 px-sm" href="#">Dashboard</a>
+<a class="text-[#a1a1aa] hover:text-white transition-colors h-full flex items-center hover:bg-[#18181b] transition-all duration-200 px-sm" href="#">Assets</a>
+<a class="text-[#10b981] border-b-2 border-[#10b981] pb-4 h-full flex items-center mt-4" href="#">Transactions</a>
+<a class="text-[#a1a1aa] hover:text-white transition-colors h-full flex items-center hover:bg-[#18181b] transition-all duration-200 px-sm" href="#">Governance</a>
+</div>
+<div class="flex items-center gap-md">
+<button class="text-[#a1a1aa] hover:text-white transition-colors hover:bg-[#18181b] transition-all duration-200 p-sm rounded active:scale-95 transition-transform">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="text-[#a1a1aa] hover:text-white transition-colors hover:bg-[#18181b] transition-all duration-200 p-sm rounded active:scale-95 transition-transform">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="bg-[#10b981] text-black font-medium px-md py-sm rounded hover:bg-[#0ea5e9] transition-colors active:scale-95 transition-transform">
+                    Connect Wallet
+                </button>
+</div>
+</div>
+</nav>
+<!-- SideNavBar (Mobile / Responsive context) -->
+<div class="flex flex-1 relative w-full max-w-container-max mx-auto">
+<nav class="bg-[#09090b] font-['Inter'] text-sm font-medium h-screen w-64 border-r border-[#27272a] flat no shadows hidden lg:flex flex-col fixed left-0 top-0 bottom-0 py-6 z-10">
+<div class="px-6 mb-8">
+<h1 class="text-lg font-black text-white">Umbra</h1>
+<p class="text-[#71717a] font-label-mono text-label-mono mt-xs">Institutional Treasury</p>
+</div>
+<div class="flex flex-col flex-1 px-sm">
+<a class="flex items-center gap-md px-md py-sm text-[#71717a] hover:text-white hover:bg-[#18181b] rounded transition-colors duration-150 mb-xs" href="#">
+<span class="material-symbols-outlined text-lg">dashboard</span>
+                    Overview
+                </a>
+<a class="flex items-center gap-md px-md py-sm text-[#71717a] hover:text-white hover:bg-[#18181b] rounded transition-colors duration-150 mb-xs" href="#">
+<span class="material-symbols-outlined text-lg">bar_chart</span>
+                    Analytics
+                </a>
+<a class="flex items-center gap-md px-md py-sm text-[#10b981] bg-[#18181b] border-r-2 border-[#10b981] rounded-l transition-colors duration-150 mb-xs" href="#">
+<span class="material-symbols-outlined text-lg" data-weight="fill">description</span>
+                    Disclosures
+                </a>
+<a class="flex items-center gap-md px-md py-sm text-[#71717a] hover:text-white hover:bg-[#18181b] rounded transition-colors duration-150 mb-xs" href="#">
+<span class="material-symbols-outlined text-lg">account_balance_wallet</span>
+                    Holdings
+                </a>
+<a class="flex items-center gap-md px-md py-sm text-[#71717a] hover:text-white hover:bg-[#18181b] rounded transition-colors duration-150 mb-xs" href="#">
+<span class="material-symbols-outlined text-lg">history</span>
+                    History
+                </a>
+</div>
+<div class="px-6 mt-auto">
+<button class="w-full bg-[#10b981] text-black font-medium py-sm rounded mb-lg hover:bg-opacity-90 transition-colors">
+                    Request Disclosure
+                </button>
+<div class="border-t border-[#27272a] pt-md flex flex-col gap-sm">
+<a class="flex items-center gap-sm text-[#71717a] hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">menu_book</span>
+                        Documentation
+                    </a>
+<a class="flex items-center gap-sm text-[#71717a] hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">help_outline</span>
+                        Support
+                    </a>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 w-full lg:ml-64 py-xl px-4 md:px-8 lg:px-12 flex flex-col gap-xl">
+<!-- Header Section -->
+<header class="max-w-3xl">
+<h1 class="font-h1 text-h1 text-on-surface mb-sm">Umbra Treasury</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+                    Institutional-grade private treasury management for decentralized organizations.
+                </p>
+</header>
+<!-- Financial Summary Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<div class="bg-surface-container border border-outline-variant p-lg rounded-lg flex flex-col justify-between">
+<div class="flex justify-between items-start mb-lg">
+<h3 class="font-label-mono text-label-mono text-on-surface-variant uppercase">Total Income</h3>
+<span class="material-symbols-outlined text-primary">arrow_upward</span>
+</div>
+<div class="font-h2 text-h2 text-on-surface">$12,450,000</div>
+<div class="mt-xs text-primary font-data-point text-data-point">+14.2% YTD</div>
+</div>
+<div class="bg-surface-container border border-outline-variant p-lg rounded-lg flex flex-col justify-between">
+<div class="flex justify-between items-start mb-lg">
+<h3 class="font-label-mono text-label-mono text-on-surface-variant uppercase">Total Expenses</h3>
+<span class="material-symbols-outlined text-error">arrow_downward</span>
+</div>
+<div class="font-h2 text-h2 text-on-surface">$3,120,500</div>
+<div class="mt-xs text-on-surface-variant font-data-point text-data-point">Protected Ledger</div>
+</div>
+<div class="bg-surface-container-highest border border-primary/30 p-lg rounded-lg flex flex-col justify-between relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none"></div>
+<div class="flex justify-between items-start mb-lg relative z-10">
+<h3 class="font-label-mono text-label-mono text-primary uppercase">Net Treasury</h3>
+<span class="material-symbols-outlined text-primary">account_balance</span>
+</div>
+<div class="font-h2 text-h2 text-primary relative z-10">$9,329,500</div>
+<div class="mt-xs text-on-surface-variant font-data-point text-data-point relative z-10">Total AUM</div>
+</div>
+</section>
+<!-- Privacy Notice & Transaction Summary -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-xl">
+<!-- Transaction Summary Count -->
+<div class="bg-surface-container border border-outline-variant rounded-lg p-lg flex flex-col justify-center items-center text-center min-h-[240px]">
+<div class="w-16 h-16 rounded-full bg-surface-variant flex items-center justify-center mb-md border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface text-3xl">lock</span>
+</div>
+<h2 class="font-h3 text-h3 text-on-surface mb-xs">142 Private Transactions</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">This Month</p>
+</div>
+<!-- Privacy Message & CTA -->
+<div class="flex flex-col justify-center border-l border-outline-variant pl-xl">
+<div class="flex items-center gap-sm mb-md">
+<span class="material-symbols-outlined text-primary" data-weight="fill">shield</span>
+<span class="font-label-mono text-label-mono text-primary uppercase tracking-widest">Privacy Preserved</span>
+</div>
+<p class="font-body-lg text-body-lg text-on-surface mb-lg">
+                        Detailed transactions are private to protect the organization's strategic capital. Ledger visibility is strictly controlled.
+                    </p>
+<div>
+<button class="bg-transparent border border-outline-variant text-on-surface font-data-point text-data-point py-sm px-lg rounded hover:bg-surface-variant transition-colors flex items-center gap-sm">
+                            Request Disclosure
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Category Breakdown Grid -->
+<section>
+<div class="flex items-center gap-sm mb-md pb-xs border-b border-outline-variant w-full">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">category</span>
+<h3 class="font-label-mono text-label-mono text-on-surface-variant uppercase">Expense Allocation Breakdown</h3>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-sm">
+<!-- Payroll -->
+<div class="bg-surface border border-outline-variant p-md rounded flex flex-col gap-md">
+<div class="flex justify-between items-center">
+<span class="font-body-md text-body-md text-on-surface">Payroll</span>
+<span class="font-data-point text-data-point text-on-surface-variant">45%</span>
+</div>
+<div class="w-full bg-surface-variant h-1 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[45%]"></div>
+</div>
+</div>
+<!-- Grants -->
+<div class="bg-surface border border-outline-variant p-md rounded flex flex-col gap-md">
+<div class="flex justify-between items-center">
+<span class="font-body-md text-body-md text-on-surface">Grants</span>
+<span class="font-data-point text-data-point text-on-surface-variant">30%</span>
+</div>
+<div class="w-full bg-surface-variant h-1 rounded-full overflow-hidden">
+<div class="bg-primary/70 h-full w-[30%]"></div>
+</div>
+</div>
+<!-- Vendors -->
+<div class="bg-surface border border-outline-variant p-md rounded flex flex-col gap-md">
+<div class="flex justify-between items-center">
+<span class="font-body-md text-body-md text-on-surface">Vendors</span>
+<span class="font-data-point text-data-point text-on-surface-variant">15%</span>
+</div>
+<div class="w-full bg-surface-variant h-1 rounded-full overflow-hidden">
+<div class="bg-primary/50 h-full w-[15%]"></div>
+</div>
+</div>
+<!-- Operations -->
+<div class="bg-surface border border-outline-variant p-md rounded flex flex-col gap-md">
+<div class="flex justify-between items-center">
+<span class="font-body-md text-body-md text-on-surface">Operations</span>
+<span class="font-data-point text-data-point text-on-surface-variant">10%</span>
+</div>
+<div class="w-full bg-surface-variant h-1 rounded-full overflow-hidden">
+<div class="bg-primary/30 h-full w-[10%]"></div>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- Footer -->
+<footer class="bg-[#09090b] font-['Inter'] text-xs uppercase tracking-widest w-full border-t border-[#27272a] py-8 flat no shadows z-20 relative">
+<div class="flex flex-col md:flex-row justify-between items-center px-8 mt-auto max-w-container-max mx-auto w-full">
+<div class="text-[#52525b] mb-4 md:mb-0 text-center md:text-left">
+                © 2024 Umbra Treasury. Secure. Transparent. Immutable.
+            </div>
+<div class="flex gap-lg">
+<a class="text-[#52525b] hover:text-[#10b981] transition-colors" href="#">Terms</a>
+<a class="text-[#52525b] hover:text-[#10b981] transition-colors" href="#">Privacy</a>
+<a class="text-[#52525b] hover:text-[#10b981] transition-colors" href="#">Github</a>
+<a class="text-[#52525b] hover:text-[#10b981] transition-colors" href="#">Contact</a>
+</div>
+</div>
+</footer>
+</body></html>

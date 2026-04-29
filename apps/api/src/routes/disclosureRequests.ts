@@ -6,6 +6,7 @@ import {
   submitDisclosureRequest,
 } from "../services/disclosureService.js";
 import { parseBody, parseParams } from "../utils/validate.js";
+import { walletAuthorizationSchema } from "../utils/walletAuthorization.js";
 
 const daoIdParamsSchema = z.object({
   daoId: z.string().min(1),
@@ -31,6 +32,7 @@ const createDisclosureSchema = z.object({
 
 const reviewDisclosureSchema = z.object({
   reviewerWalletAddress: z.string().min(1),
+  walletAuthorization: walletAuthorizationSchema,
   reviewerUsername: z.string().min(1).optional(),
   status: z.enum(["approved", "rejected"]),
   disclosureMethod: z.enum(["viewing_key", "x25519_grant", "mock"]).optional(),

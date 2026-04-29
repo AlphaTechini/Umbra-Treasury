@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { desc, eq } from "drizzle-orm";
-import { db } from "../db/client.js";
+import { db, type DbExecutor } from "../db/client.js";
 import { daos, disclosureRequests } from "../db/schema.js";
 
 export type CreateDisclosureRequestInput = {
@@ -93,8 +93,8 @@ export async function reviewDisclosureRequest(input: {
 export async function fulfillDisclosureRequest(input: {
   id: string;
   fulfilledReportId: string;
-}) {
-  const [request] = await db
+}, executor: DbExecutor = db) {
+  const [request] = await executor
     .update(disclosureRequests)
     .set({
       status: "fulfilled",

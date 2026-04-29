@@ -79,6 +79,8 @@ Current backend structure:
 - providers own the Umbra integration boundary.
 - config owns environment parsing.
 - real frontend-issued Umbra compliance grants are recorded through `POST /disclosure-requests/:requestId/umbra-report`.
+- owner-sensitive backend writes require signed wallet authorization before service workflows proceed.
+- `/health` is lightweight process health; `/ready` performs the database readiness check.
 
 Current frontend structure:
 
@@ -155,6 +157,15 @@ Initial real Umbra focus:
 - implement compliance disclosure using Umbra's actual compliance primitives
 
 Backend real-compliance report ingestion now records frontend-issued Umbra grant references as `reports.source = "umbra_compliance"` and writes both `compliance_grant_issued` and `report_generated` access logs.
+
+Umbra compliance reports default to `verificationStatus = "unverified"` until the backend implements real on-chain grant verification. Clients must not be allowed to self-declare verified compliance.
+
+Sensitive backend wallet authorization messages use app `umbra-treasury-disclosure` and actions:
+
+- `treasury_transaction:create`
+- `disclosure:review`
+- `report:mock:create`
+- `report:umbra:create`
 
 Frontend Umbra SDK integration now starts in `apps/web/src/lib/umbra` and intentionally avoids route-page wiring until the pages are ready.
 

@@ -8,6 +8,8 @@ This folder contains backend workflow logic.
 
 Services coordinate repositories, access logs, and providers. They do not receive Fastify request objects, which keeps business logic testable later without adding tests now.
 
+Owner-sensitive services verify signed wallet authorization before changing private treasury, disclosure, or report state.
+
 The tradeoff is a small mapping layer between HTTP request payloads and database enum values, but the API and database now both use frontend-friendly lowercase values.
 
 ## Logic Tracking
@@ -27,6 +29,8 @@ To find disclosure request logic, visit [disclosureService.ts](file:///C:/Hackat
 To find report generation logic, visit [reportService.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/services/reportService.ts).
 
 To find Umbra compliance report generation logic, visit [reportService.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/services/reportService.ts).
+
+To find wallet authorization enforcement in services, visit [transactionService.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/services/transactionService.ts), [disclosureService.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/services/disclosureService.ts), and [reportService.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/services/reportService.ts).
 
 To find access log query logic, visit [accessLogService.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/services/accessLogService.ts).
 
