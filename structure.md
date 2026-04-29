@@ -9,7 +9,7 @@
 |   `-- README.md
 |-- apps/
 |   |-- README.md
-|   `-- api/
+|   |-- api/
 |       |-- Dockerfile
 |       |-- Dockerfile.dockerignore
 |       |-- README.md
@@ -26,6 +26,15 @@
 |           |-- routes/
 |           |-- services/
 |           `-- utils/
+|   `-- web/
+|       |-- README.md
+|       |-- package.json
+|       |-- svelte.config.js
+|       |-- vite.config.ts
+|       `-- src/
+|           |-- README.md
+|           |-- lib/
+|           `-- routes/
 |-- migrations/
 |   |-- README.md
 |   |-- 0000_bent_xorn.sql
@@ -66,6 +75,8 @@ To find SQL migrations, visit [migrations/README.md](file:///C:/Hackathons/Umbra
 
 To find the backend API implementation, visit [apps/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/README.md) and [apps/api/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/api/README.md).
 
+To find the frontend implementation, visit [apps/web/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/README.md).
+
 To find backend route handlers, visit [apps/api/src/routes/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/routes/README.md).
 
 To find backend workflow logic, visit [apps/api/src/services/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/services/README.md).
@@ -90,6 +101,10 @@ The backend API shell can be found in [apps/api/src/app.ts](file:///C:/Hackathon
 
 The first backend vertical slice can be found across [routes](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/routes), [services](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/services), and [repositories](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/repositories).
 
+The frontend pages can be found in [apps/web/src/routes/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/routes/README.md).
+
+The frontend shared components can be found in [apps/web/src/lib/components/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/components/README.md).
+
 The Umbra resource list can be found in [Resources.md](./Resources.md).
 
 ## Folder READMEs
@@ -99,6 +114,16 @@ The `.agents` folder README can be found in [.agents/README.md](file:///C:/Hacka
 The `apps` folder README can be found in [apps/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/README.md).
 
 The `apps/api` folder README can be found in [apps/api/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/api/README.md).
+
+The `apps/web` folder README can be found in [apps/web/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/README.md).
+
+The `apps/web/src` folder README can be found in [apps/web/src/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/README.md).
+
+The `apps/web/src/lib` folder README can be found in [apps/web/src/lib/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/README.md).
+
+The `apps/web/src/lib/components` folder README can be found in [apps/web/src/lib/components/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/components/README.md).
+
+The `apps/web/src/routes` folder README can be found in [apps/web/src/routes/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/routes/README.md).
 
 The `apps/api/src` folder README can be found in [apps/api/src/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/README.md).
 

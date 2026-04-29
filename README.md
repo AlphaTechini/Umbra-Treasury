@@ -210,6 +210,7 @@ See [structure.md](./structure.md) for the current folder and logic map.
 Backend implementation:
 
 - [apps/api](./apps/api) contains the Fastify backend.
+- [apps/web](./apps/web) contains the SvelteKit frontend.
 - [apps/api/src/routes](./apps/api/src/routes) exposes the current HTTP API surface.
 - [apps/api/src/services](./apps/api/src/services) coordinates workflow logic.
 - [apps/api/src/providers](./apps/api/src/providers) contains the Umbra provider boundary and mock fallback.
@@ -257,6 +258,7 @@ pnpm install
 $env:DATABASE_URL="postgresql://user:password@localhost:5432/umbra_treasury?schema=public&sslmode=require"
 pnpm db:migrate
 pnpm dev:api
+pnpm dev:web
 ```
 
 ---

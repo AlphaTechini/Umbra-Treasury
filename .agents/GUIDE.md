@@ -69,6 +69,8 @@ This keeps product workflow code separate from protocol-specific calls and prote
 
 Backend implementation now lives in `apps/api` as a Fastify workspace.
 
+Frontend implementation now lives in `apps/web` as a SvelteKit workspace imported from `https://github.com/AlphaTechini/Umbra-Treasury-frontend-`.
+
 Current backend structure:
 
 - routes own HTTP request validation and response shape.
@@ -76,6 +78,13 @@ Current backend structure:
 - repositories own Drizzle queries.
 - providers own the Umbra integration boundary.
 - config owns environment parsing.
+
+Current frontend structure:
+
+- routes own pages and SvelteKit server endpoints.
+- lib owns shared helpers, loading state, toasts, and reusable components.
+- SvelteKit uses `@sveltejs/adapter-vercel`.
+- Gemini insight generation must read `GEMINI_API_KEY` through SvelteKit private environment access only.
 
 Drizzle is the backend ORM. The schema lives in `apps/api/src/db/schema.ts`, migrations live in `migrations`, and `drizzle.config.ts` controls migration tooling.
 

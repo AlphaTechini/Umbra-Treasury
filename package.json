@@ -6,7 +6,10 @@
   "packageManager": "pnpm@10.32.1",
   "scripts": {
     "dev:api": "pnpm --filter @umbra-treasury/api dev",
+    "dev:web": "pnpm --filter @umbra-treasury/web dev",
     "build:api": "pnpm --filter @umbra-treasury/api build",
+    "build:web": "pnpm --filter @umbra-treasury/web build",
+    "check:web": "pnpm --filter @umbra-treasury/web check",
     "start:api": "pnpm --filter @umbra-treasury/api start",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
@@ -15,6 +18,7 @@
   },
   "pnpm": {
     "overrides": {
+      "cookie": "0.7.2",
       "esbuild": "0.25.12"
     }
   },
