@@ -26,6 +26,8 @@ To find disclosure request logic, visit [disclosureService.ts](file:///C:/Hackat
 
 To find report generation logic, visit [reportService.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/services/reportService.ts).
 
+To find Umbra compliance report generation logic, visit [reportService.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/services/reportService.ts).
+
 To find access log query logic, visit [accessLogService.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/services/accessLogService.ts).
 
 ## Component Connections

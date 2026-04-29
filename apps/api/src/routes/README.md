@@ -24,6 +24,8 @@ To find disclosure request routes, visit [disclosureRequests.ts](file:///C:/Hack
 
 To find report routes, visit [reports.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/routes/reports.ts).
 
+To find the Umbra compliance report ingestion route, visit [reports.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/routes/reports.ts).
+
 To find access log routes, visit [accessLogs.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/routes/accessLogs.ts).
 
 ## Component Connections

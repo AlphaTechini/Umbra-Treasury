@@ -78,6 +78,7 @@ Current backend structure:
 - repositories own Drizzle queries.
 - providers own the Umbra integration boundary.
 - config owns environment parsing.
+- real frontend-issued Umbra compliance grants are recorded through `POST /disclosure-requests/:requestId/umbra-report`.
 
 Current frontend structure:
 
@@ -152,6 +153,8 @@ Initial real Umbra focus:
 - query encrypted balance
 - withdraw from encrypted balance
 - implement compliance disclosure using Umbra's actual compliance primitives
+
+Backend real-compliance report ingestion now records frontend-issued Umbra grant references as `reports.source = "umbra_compliance"` and writes both `compliance_grant_issued` and `report_generated` access logs.
 
 Frontend Umbra SDK integration now starts in `apps/web/src/lib/umbra` and intentionally avoids route-page wiring until the pages are ready.
 

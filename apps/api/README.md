@@ -34,6 +34,8 @@ To find disclosure workflow logic, visit [disclosureService.ts](file:///C:/Hacka
 
 To find report generation logic, visit [reportService.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/services/reportService.ts).
 
+To find Umbra compliance report ingestion logic, visit [reportService.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/services/reportService.ts).
+
 To find Umbra provider contracts, visit [umbraProvider.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/providers/umbraProvider.ts).
 
 ## Component Connections
