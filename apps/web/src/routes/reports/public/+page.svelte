@@ -13,21 +13,8 @@
 		<header class="bg-[#09090b] border-b border-[#27272a] flex justify-between items-center w-full px-6 h-16 sticky top-0 z-40">
 			<div class="flex items-center gap-8">
 				<span class="text-xl font-bold tracking-tighter text-white">Public Treasury</span>
-				<div class="hidden lg:flex items-center bg-[#18181b] rounded-full px-4 py-1.5 border border-[#27272a]">
-					<span class="material-symbols-outlined text-zinc-500 mr-2 text-sm">search</span>
-					<input class="bg-transparent border-none focus:ring-0 text-zinc-300 w-48 placeholder-zinc-600 h-5 p-0 text-sm outline-none" placeholder="Search reports..." type="text"/>
-				</div>
 			</div>
 			<div class="flex items-center gap-4">
-				<div class="flex items-center gap-2">
-					<button class="p-2 text-zinc-400 hover:bg-[#18181b] transition-colors rounded-lg">
-						<span class="material-symbols-outlined">notifications</span>
-					</button>
-					<button class="p-2 text-zinc-400 hover:bg-[#18181b] transition-colors rounded-lg">
-						<span class="material-symbols-outlined">settings</span>
-					</button>
-				</div>
-				<div class="h-6 w-px bg-[#27272a] mx-2"></div>
 				<a href="/connect-wallet" class="bg-[#10b981] text-[#002113] font-bold px-4 py-1.5 rounded text-xs hover:bg-[#4edea3] transition-colors active:scale-[0.98]">
 					Connect Wallet
 				</a>

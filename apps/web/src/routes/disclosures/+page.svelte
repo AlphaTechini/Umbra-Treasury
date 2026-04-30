@@ -13,24 +13,8 @@
 	<div class="flex-1 md:ml-64 flex flex-col min-h-screen">
 		<!-- TopAppBar -->
 		<header class="bg-[#09090b] border-b border-[#27272a] flex justify-between items-center w-full px-6 h-16 sticky top-0 z-40">
-			<div class="flex items-center flex-1">
-				<div class="relative w-full max-w-sm">
-					<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-sm">search</span>
-					<input
-						class="w-full bg-[#18181b] border border-[#27272a] focus:border-zinc-400 focus:ring-0 text-sm py-1.5 pl-10 pr-4 text-zinc-200 rounded-lg transition-colors"
-						placeholder="Search requests..."
-						type="text"
-					/>
-				</div>
-			</div>
+			<div class="flex items-center flex-1"></div>
 			<div class="flex items-center gap-3">
-				<button class="p-1.5 text-zinc-400 hover:text-zinc-100 hover:bg-[#18181b] transition-colors rounded-lg">
-					<span class="material-symbols-outlined">notifications</span>
-				</button>
-				<button class="p-1.5 text-zinc-400 hover:text-zinc-100 hover:bg-[#18181b] transition-colors rounded-lg">
-					<span class="material-symbols-outlined">settings</span>
-				</button>
-				<div class="w-px h-6 bg-[#27272a] mx-1"></div>
 				<a href="/connect-wallet" class="bg-[#10b981] text-[#002113] font-bold px-4 py-1.5 rounded text-xs hover:bg-[#4edea3] transition-colors active:scale-[0.98]">
 					Connect Wallet
 				</a>

@@ -1,12 +1,9 @@
 <script lang="ts">
 	import { 
-		Search, 
 		ArrowDown, 
 		Download, 
 		Plus, 
-		MoreHorizontal,
-		ArrowUpRight,
-		ArrowDownRight
+		MoreHorizontal
 	} from 'lucide-svelte';
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { fade, fly } from 'svelte/transition';
@@ -79,21 +76,7 @@
 		</header>
 
 		<div class="glass-card overflow-hidden" in:fly={{ y: 20, delay: 200 }}>
-			<div class="p-4 border-b border-white/5 flex items-center justify-between gap-4">
-				<div class="relative flex-1 max-w-md">
-					<Search class="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={16} />
-					<input 
-						type="text" 
-						placeholder="Search by ID, name, or amount..." 
-						class="w-full bg-white/5 border border-white/5 rounded-lg py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-purple-500/50 transition-colors"
-						oninput={(e) => {
-							if (e.currentTarget.value.length > 3) {
-								toasts.add(`Filtering for "${e.currentTarget.value}"...`, 'info');
-							}
-						}}
-					/>
-				</div>
-				
+			<div class="p-4 border-b border-white/5 flex items-center justify-end gap-4">
 				<div class="flex items-center gap-2">
 					<select class="bg-[#0a0a0a] border border-white/5 rounded-lg px-3 py-2 text-sm focus:outline-none">
 						<option>All Statuses</option>
