@@ -54,7 +54,7 @@ export function watchCompatibleWallets(onChange: (wallets: CompatibleWallet[]) =
 	};
 }
 
-export async function connectCompatibleWallet(walletName: string): Promise<ConnectedWallet> {
+export async function connectCompatibleWallet(walletName: string, expectedWalletAddress?: string): Promise<ConnectedWallet> {
 	const wallet = getCompatibleWallets().find((candidate) => candidate.name === walletName);
 
 	if (!wallet) {
@@ -68,10 +68,10 @@ export async function connectCompatibleWallet(walletName: string): Promise<Conne
 	}
 
 	const { accounts } = await connectFeature.connect();
-	const account = findCompatibleAccount(wallet, accounts);
+	const account = findCompatibleAccount(wallet, accounts, expectedWalletAddress);
 
 	if (!account) {
-		throw new Error(`${wallet.name} did not return a compatible Solana account.`);
+		throw new Error(`${wallet.name} did not return the expected compatible Solana account.`);
 	}
 
 	return {
@@ -96,20 +96,25 @@ function isCompatibleWallet(wallet: UmbraWallet): wallet is CompatibleWallet {
 	);
 }
 
-function findCompatibleAccount(wallet: CompatibleWallet, accounts: readonly UmbraWalletAccount[] = []) {
+function findCompatibleAccount(
+	wallet: CompatibleWallet,
+	accounts: readonly UmbraWalletAccount[] = [],
+	expectedWalletAddress?: string
+) {
 	return (
-		accounts.find((account) => accountSupportsUmbra(account)) ??
-		wallet.accounts.find((account) => accountSupportsUmbra(account)) ??
+		accounts.find((account) => accountSupportsUmbra(account, expectedWalletAddress)) ??
+		wallet.accounts.find((account) => accountSupportsUmbra(account, expectedWalletAddress)) ??
 		null
 	);
 }
 
-function accountSupportsUmbra(account: UmbraWalletAccount) {
+function accountSupportsUmbra(account: UmbraWalletAccount, expectedWalletAddress?: string) {
 	const chains = Array.from(account.chains ?? []);
 	const features = Array.from(account.features ?? []);
 
 	return (
 		account.address.length > 0 &&
+		(!expectedWalletAddress || account.address === expectedWalletAddress) &&
 		chains.some((chain) => String(chain).startsWith(solanaChainPrefix)) &&
 		features.includes(solanaSignMessageFeature) &&
 		features.includes(solanaSignTransactionFeature)

@@ -114,7 +114,11 @@ The frontend shared components can be found in [apps/web/src/lib/components/READ
 
 The frontend session state can be found in [apps/web/src/lib/session/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/session/README.md).
 
+The browser wallet authorization flow can be found in [apps/web/src/lib/session/walletAuthorization.ts](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/session/walletAuthorization.ts).
+
 The frontend Umbra SDK integration can be found in [apps/web/src/lib/umbra/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/umbra/README.md).
+
+The active in-memory Umbra client session can be found in [apps/web/src/lib/umbra/session.ts](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/umbra/session.ts).
 
 The Umbra resource list can be found in [Resources.md](./Resources.md).
 

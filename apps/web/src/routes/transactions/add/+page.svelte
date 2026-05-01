@@ -1,17 +1,60 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { createTransaction } from '$lib/api/transactions';
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { pendingRequestActions, runRequestAction } from '$lib/loading';
+	import { daoSession, signWalletAuthorization, walletSession } from '$lib/session';
 	import { toasts } from '$lib/toasts';
+	import { get } from 'svelte/store';
 
 	const sendPrivateTransactionAction = 'transactions:send-private';
 
 	async function handleSendPrivateTransaction(event: SubmitEvent) {
 		event.preventDefault();
 		await runRequestAction(sendPrivateTransactionAction, async () => {
-			toasts.add('Preparing private transaction request...', 'info');
-			await new Promise((resolve) => setTimeout(resolve, 1000));
-			toasts.add('Transaction backend integration is not wired yet.', 'warning');
+			const dao = get(daoSession).dao;
+			const walletAddress = get(walletSession).walletAddress;
+
+			if (!dao || !walletAddress) {
+				throw new Error('Connect a wallet before adding a private transaction record.');
+			}
+
+			const formData = new FormData(event.currentTarget as HTMLFormElement);
+			const amount = String(formData.get('amount') ?? '').trim();
+			const token = String(formData.get('token') ?? 'usdc').trim();
+			const category = String(formData.get('category') ?? 'ops').trim();
+			const walletAuthorization = await signWalletAuthorization({
+				action: 'treasury_transaction:create',
+				daoId: dao.id,
+				walletAddress
+			});
+
+			toasts.add('Wallet authorization signed. Recording private transaction metadata...', 'info');
+			await createTransaction(dao.id, {
+				createdByWalletAddress: walletAddress,
+				walletAuthorization,
+				type: 'expense',
+				category: toTransactionCategory(category),
+				token,
+				...(amount ? { amountHint: amount } : {}),
+				date: new Date().toISOString(),
+				umbraOperationType: 'mock',
+				umbraOperationRefs: {
+					source: 'frontend_private_transaction_form',
+					note: 'Recipient and memo are intentionally not stored until encrypted metadata is implemented.'
+				}
+			});
+			toasts.add('Private transaction metadata recorded.', 'success');
+			await goto('/transactions');
 		});
+	}
+
+	function toTransactionCategory(value: string) {
+		if (value === 'payroll' || value === 'grant' || value === 'vendor' || value === 'ops') {
+			return value;
+		}
+
+		return 'other';
 	}
 </script>
 
@@ -70,15 +113,19 @@
 						<div class="flex gap-2">
 							<input
 								id="amount"
+								name="amount"
 								type="text"
 								placeholder="0.00"
 								class="flex-1 bg-[#0d0e15] border border-[#27272a] focus:border-zinc-400 focus:ring-0 rounded-lg px-4 py-3 font-data-point text-data-point text-zinc-200 placeholder:text-zinc-600 transition-colors"
 							/>
 							<div class="relative w-36">
-								<select class="appearance-none w-full bg-[#0d0e15] border border-[#27272a] focus:border-zinc-400 focus:ring-0 rounded-lg px-4 py-3 font-body-md text-body-md text-zinc-200 cursor-pointer transition-colors">
-									<option value="eth">ETH</option>
+								<select
+									name="token"
+									class="appearance-none w-full bg-[#0d0e15] border border-[#27272a] focus:border-zinc-400 focus:ring-0 rounded-lg px-4 py-3 font-body-md text-body-md text-zinc-200 cursor-pointer transition-colors"
+								>
 									<option value="usdc">USDC</option>
-									<option value="dai">DAI</option>
+									<option value="usdt">USDT</option>
+									<option value="wsol">wSOL</option>
 								</select>
 								<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none">expand_more</span>
 							</div>
@@ -102,7 +149,7 @@
 						<div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
 							{#each ['Payroll', 'Grants', 'Infrastructure', 'Operations'] as cat, i}
 								<label class="cursor-pointer">
-									<input type="radio" name="category" value={cat.toLowerCase()} class="peer sr-only" checked={i === 0} />
+									<input type="radio" name="category" value={cat === 'Grants' ? 'grant' : cat === 'Infrastructure' || cat === 'Operations' ? 'ops' : cat.toLowerCase()} class="peer sr-only" checked={i === 0} />
 									<div class="border border-[#27272a] rounded-lg px-3 py-2 text-center font-body-md text-body-md text-zinc-400 peer-checked:border-[#10b981] peer-checked:text-[#10b981] peer-checked:bg-[#10b981]/5 hover:border-zinc-500 transition-all">
 										{cat}
 									</div>

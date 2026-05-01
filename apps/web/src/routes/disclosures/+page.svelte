@@ -1,19 +1,21 @@
 <script lang="ts">
-	import { getDaoDisclosureRequests } from '$lib/api/disclosures';
+	import { getDaoDisclosureRequests, reviewDisclosureRequest } from '$lib/api/disclosures';
+	import { generateMockDisclosureReport } from '$lib/api/reports';
 	import type { DisclosureRequest } from '$lib/api/types';
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { formatDate, formatLabel, shortId } from '$lib/display';
 	import { pendingRequestActions, runRequestAction } from '$lib/loading';
-	import { daoSession } from '$lib/session';
+	import { daoSession, signWalletAuthorization, walletSession } from '$lib/session';
 	import { toasts } from '$lib/toasts';
 	import { onMount } from 'svelte';
+	import { get } from 'svelte/store';
 
 	let disclosureRequests = $state<DisclosureRequest[]>([]);
 	let isLoadingData = $state(true);
 	let emptyMessage = $state('Loading disclosure requests...');
 
 	onMount(async () => {
-		const dao = await daoSession.loadDemoDao();
+		const dao = get(daoSession).dao ?? (await daoSession.loadDemoDao());
 
 		if (!dao) {
 			emptyMessage = 'No data yet. Connect a wallet or create a DAO treasury to begin.';
@@ -36,6 +38,10 @@
 		return `disclosures:review:${requestId}:${status}`;
 	}
 
+	function getMockReportAction(requestId: string) {
+		return `reports:mock:${requestId}`;
+	}
+
 	function getStatusColor(status: string) {
 		switch (status) {
 			case 'approved':
@@ -50,8 +56,55 @@
 
 	async function handleDisclosureReview(requestId: string, status: 'approved' | 'rejected') {
 		await runRequestAction(getDisclosureReviewAction(requestId, status), async () => {
-			await new Promise((resolve) => setTimeout(resolve, 1000));
-			toasts.add('Wallet authorization is needed before this backend action can be submitted.', 'warning');
+			const dao = get(daoSession).dao;
+			const walletAddress = get(walletSession).walletAddress;
+
+			if (!dao || !walletAddress) {
+				throw new Error('Connect the DAO owner wallet before reviewing disclosure requests.');
+			}
+
+			const walletAuthorization = await signWalletAuthorization({
+				action: 'disclosure:review',
+				daoId: dao.id,
+				requestId,
+				walletAddress
+			});
+			const response = await reviewDisclosureRequest(dao.id, requestId, {
+				reviewerWalletAddress: walletAddress,
+				walletAuthorization,
+				status,
+				...(status === 'approved' ? { disclosureMethod: 'x25519_grant' } : {})
+			});
+
+			disclosureRequests = disclosureRequests.map((request) =>
+				request.id === requestId ? response.disclosureRequest : request
+			);
+			toasts.add(`Disclosure request ${status}.`, 'success');
+		});
+	}
+
+	async function handleMockReportGeneration(requestId: string) {
+		await runRequestAction(getMockReportAction(requestId), async () => {
+			const walletAddress = get(walletSession).walletAddress;
+
+			if (!walletAddress) {
+				throw new Error('Connect the DAO owner wallet before generating reports.');
+			}
+
+			const walletAuthorization = await signWalletAuthorization({
+				action: 'report:mock:create',
+				requestId,
+				walletAddress
+			});
+			await generateMockDisclosureReport(requestId, {
+				generatedByWalletAddress: walletAddress,
+				walletAuthorization
+			});
+
+			disclosureRequests = disclosureRequests.map((request) =>
+				request.id === requestId ? { ...request, status: 'fulfilled' } : request
+			);
+			toasts.add('Mock disclosure report generated.', 'success');
 		});
 	}
 </script>
@@ -141,6 +194,15 @@
 														{$pendingRequestActions[rejectAction] ? 'Rejecting...' : 'Reject'}
 													</button>
 												</div>
+											{:else if req.status === 'approved'}
+												{@const mockReportAction = getMockReportAction(req.id)}
+												<button
+													onclick={() => handleMockReportGeneration(req.id)}
+													disabled={$pendingRequestActions[mockReportAction]}
+													class="text-xs text-[#10b981] hover:underline font-bold disabled:cursor-not-allowed disabled:opacity-60"
+												>
+													{$pendingRequestActions[mockReportAction] ? 'Generating...' : 'Generate Mock Report'}
+												</button>
 											{:else}
 												<button class="text-xs text-zinc-500 hover:text-zinc-300">View</button>
 											{/if}

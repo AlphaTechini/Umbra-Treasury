@@ -96,6 +96,10 @@ Frontend session persistence stores only public-safe wallet address and DAO meta
 
 Wallet connect uses Wallet Standard discovery for compatible Solana wallets. On connect, the frontend persists only the public wallet address, calls `POST /users`, then loads the first DAO owned by that wallet or creates a default public DAO workspace with the wallet address as the treasury address.
 
+Wallet connect now creates an Umbra client session from the returned Wallet Standard signer and calls Umbra SDK user registration before backend DAO bootstrap. The active Umbra client session is in-memory only and must not be persisted to `localStorage`.
+
+Frontend wallet authorization uses fresh browser wallet signatures over the exact backend JSON message. The frontend stores the public wallet name only to reconnect the same wallet for signing; it must not store signatures, authorization messages, or private key material.
+
 The `umbra-demo` slug remains a fallback for legacy demo pages, while the connect-wallet route now prefers wallet-owned DAO discovery and create-on-connect.
 
 Drizzle is the backend ORM. The schema lives in `apps/api/src/db/schema.ts`, migrations live in `migrations`, and `drizzle.config.ts` controls migration tooling.

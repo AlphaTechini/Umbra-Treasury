@@ -1,7 +1,12 @@
 import { createDao, getOwnerDaoByWalletAddress } from '$lib/api/daos';
 import { ApiClientError } from '$lib/api/http';
 import { createUser } from '$lib/api/users';
-import { connectCompatibleWallet } from '$lib/umbra';
+import {
+	connectCompatibleWallet,
+	createUmbraClientSession,
+	registerUmbraUser,
+	setActiveUmbraClientSession
+} from '$lib/umbra';
 import { daoSession } from './daoSession';
 import { walletSession } from './walletSession';
 
@@ -9,15 +14,25 @@ export type ConnectWalletFlowResult = {
 	walletAddress: string;
 	walletName: string;
 	daoSlug: string;
+	umbraRegistrationSignatures: string[];
 };
 
 export async function connectWalletAndLoadDao(walletName: string): Promise<ConnectWalletFlowResult> {
 	const connectedWallet = await connectCompatibleWallet(walletName);
 	const walletAddress = connectedWallet.walletAddress;
 	const username = connectedWallet.account.label ?? connectedWallet.wallet.name;
+	const umbraClientSession = await createUmbraClientSession({ signer: connectedWallet.signer });
+	const umbraRegistrationSignatures = await registerUmbraUser(umbraClientSession);
+
+	setActiveUmbraClientSession({
+		...umbraClientSession,
+		walletAddress,
+		walletName: connectedWallet.wallet.name,
+		registrationSignatures: umbraRegistrationSignatures
+	});
 
 	await createUser({ walletAddress, username });
-	walletSession.connect(walletAddress);
+	walletSession.connect(walletAddress, connectedWallet.wallet.name);
 
 	const dao = await loadOrCreateDao(walletAddress);
 	daoSession.setActiveDao(dao);
@@ -25,7 +40,8 @@ export async function connectWalletAndLoadDao(walletName: string): Promise<Conne
 	return {
 		walletAddress,
 		walletName: connectedWallet.wallet.name,
-		daoSlug: dao.slug
+		daoSlug: dao.slug,
+		umbraRegistrationSignatures
 	};
 }
 

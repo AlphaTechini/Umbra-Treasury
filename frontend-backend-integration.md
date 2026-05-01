@@ -20,19 +20,19 @@ This approach fits the current codebase because backend routes already own valid
 
 ## Phase 1: Configuration And Shared API Layer
 
-- [ ] Confirm frontend reads `PUBLIC_API_BASE_URL` from `apps/web/.env.example`.
-- [ ] Create `apps/web/src/lib/api/config.ts` for public API base URL parsing.
-- [ ] Create `apps/web/src/lib/api/http.ts` for shared `fetch` handling.
-- [ ] Normalize backend error responses from `{ error: string }` into UI-friendly messages.
-- [ ] Add request helpers for `GET`, `POST`, and `PATCH`.
-- [ ] Keep secrets out of frontend code. Only `PUBLIC_*` values may reach browser code.
-- [ ] Add `apps/web/src/lib/api/README.md` documenting the client boundary and file links.
+- [x] Confirm frontend reads `PUBLIC_API_BASE_URL` from `apps/web/.env.example`.
+- [x] Create `apps/web/src/lib/api/config.ts` for public API base URL parsing.
+- [x] Create `apps/web/src/lib/api/http.ts` for shared `fetch` handling.
+- [x] Normalize backend error responses from `{ error: string }` into UI-friendly messages.
+- [x] Add request helpers for `GET`, `POST`, and `PATCH`.
+- [x] Keep secrets out of frontend code. Only `PUBLIC_*` values may reach browser code.
+- [x] Add `apps/web/src/lib/api/README.md` documenting the client boundary and file links.
 
 ## Phase 2: Wallet Session And Authorization
 
-- [ ] Decide the first supported wallet adapter for demo flow.
-- [ ] Store connected wallet address in a small frontend session store.
-- [ ] Add a helper to build wallet authorization JSON messages using backend-required fields:
+- [x] Decide the first supported wallet adapter for demo flow.
+- [x] Store connected wallet address in a small frontend session store.
+- [x] Add a helper to build wallet authorization JSON messages using backend-required fields:
   - `app: "umbra-treasury-disclosure"`
   - `action`
   - `walletAddress`
@@ -40,26 +40,27 @@ This approach fits the current codebase because backend routes already own valid
   - optional `requestId`
   - `issuedAt`
   - `expiresAt`
-- [ ] Sign authorization messages in the browser.
-- [ ] Encode signatures in the base64 format expected by `apps/api/src/utils/walletAuthorization.ts`.
-- [ ] Wire authorization actions:
+- [x] Sign authorization messages in the browser.
+- [x] Encode signatures in the base64 format expected by `apps/api/src/utils/walletAuthorization.ts`.
+- [x] Add frontend authorization helper support for actions:
   - `treasury_transaction:create`
   - `disclosure:review`
   - `report:mock:create`
   - `report:umbra:create`
+- [x] Wire visible UI actions for `treasury_transaction:create`, `disclosure:review`, and `report:mock:create`.
 - [ ] Show expired, rejected, and invalid signature states clearly.
 
 ## Phase 3: DAO Bootstrap Flow
 
-- [ ] Choose a demo DAO lookup strategy:
+- [x] Choose a demo DAO lookup strategy:
   - fixed seeded slug for hackathon demo, or
   - create DAO on first wallet connection.
-- [ ] Wire `POST /users` after wallet connection.
-- [ ] Wire `POST /daos` for first DAO creation when needed.
-- [ ] Wire `GET /daos/slug/:slug` for existing DAO loading.
-- [ ] Persist the active DAO id in a frontend store.
-- [ ] Add empty-state UI when no DAO exists yet.
-- [ ] Avoid assuming a DAO id in page components without checking session state.
+- [x] Wire `POST /users` after wallet connection.
+- [x] Wire `POST /daos` for first DAO creation when needed.
+- [x] Wire `GET /daos/slug/:slug` for existing DAO loading.
+- [x] Persist the active DAO id in a frontend store.
+- [x] Add empty-state UI when no DAO exists yet.
+- [x] Avoid assuming a DAO id in page components without checking session state.
 
 ## Phase 4: Dashboard Integration
 
@@ -73,8 +74,8 @@ This approach fits the current codebase because backend routes already own valid
 
 ## Phase 5: Transactions Integration
 
-- [ ] Replace static arrays in transaction pages with backend data.
-- [ ] Wire `GET /daos/:daoId/transactions`.
+- [x] Replace static arrays in transaction pages with backend data.
+- [x] Wire `GET /daos/:daoId/transactions`.
 - [ ] Display only public-safe fields:
   - `id`
   - `type`
@@ -87,16 +88,16 @@ This approach fits the current codebase because backend routes already own valid
   - `umbraStatus`
   - `privacyStatus`
 - [ ] Keep `encryptedPrivateMetadata` out of normal table display.
-- [ ] Wire `apps/web/src/routes/transactions/add/+page.svelte` to `POST /daos/:daoId/transactions`.
-- [ ] Generate required wallet authorization before transaction creation.
-- [ ] Map frontend categories to backend enum values:
+- [x] Wire `apps/web/src/routes/transactions/add/+page.svelte` to `POST /daos/:daoId/transactions`.
+- [x] Generate required wallet authorization before transaction creation.
+- [x] Map frontend categories to backend enum values:
   - Payroll -> `payroll`
   - Grants -> `grant`
   - Infrastructure -> `ops` or `vendor`, depending on final copy
   - Operations -> `ops`
-- [ ] Map token selector to backend-supported token strings.
-- [ ] Set `umbraOperationType` to `mock` until a real Umbra operation reference exists.
-- [ ] Add success toast and redirect back to dashboard or transactions.
+- [x] Map token selector to backend-supported token strings.
+- [x] Set `umbraOperationType` to `mock` until a real Umbra operation reference exists.
+- [x] Add success toast and redirect back to dashboard or transactions.
 - [ ] Add form-level validation before sending requests.
 
 ## Phase 6: Disclosure Request Integration
@@ -112,22 +113,23 @@ This approach fits the current codebase because backend routes already own valid
   - `category`
   - `startDate`
   - `endDate`
-- [ ] Replace static disclosure table in `apps/web/src/routes/disclosures/+page.svelte`.
-- [ ] Wire `GET /daos/:daoId/disclosure-requests`.
-- [ ] Wire approve/reject actions to `PATCH /daos/:daoId/disclosure-requests/:requestId/review`.
-- [ ] Generate wallet authorization with action `disclosure:review`.
-- [ ] Show pending, approved, rejected, and fulfilled states.
-- [ ] Disable approve/reject buttons while a request is being reviewed.
+- [x] Replace static disclosure table in `apps/web/src/routes/disclosures/+page.svelte`.
+- [x] Wire `GET /daos/:daoId/disclosure-requests`.
+- [x] Wire approve/reject actions to `PATCH /daos/:daoId/disclosure-requests/:requestId/review`.
+- [x] Generate wallet authorization with action `disclosure:review`.
+- [x] Show pending, approved, rejected, and fulfilled states.
+- [x] Disable approve/reject buttons while a request is being reviewed.
 
 ## Phase 7: Reports Integration
 
-- [ ] Wire report list pages to `GET /daos/:daoId/reports`.
+- [x] Wire report list pages to `GET /daos/:daoId/reports`.
 - [ ] Wire report detail pages to `GET /reports/:reportId` where needed.
 - [ ] Wire public summary report generation to `POST /daos/:daoId/summary-report`.
-- [ ] Wire mock disclosure report generation to `POST /disclosure-requests/:requestId/mock-report`.
+- [x] Wire mock disclosure report generation to `POST /disclosure-requests/:requestId/mock-report`.
 - [ ] Wire Umbra compliance report ingestion to `POST /disclosure-requests/:requestId/umbra-report`.
-- [ ] Generate wallet authorization for report creation:
+- [x] Generate wallet authorization for mock report creation:
   - `report:mock:create`
+- [ ] Generate wallet authorization for Umbra report creation after real grant issuance is wired:
   - `report:umbra:create`
 - [ ] Display report source clearly:
   - `summary_only`
@@ -138,9 +140,9 @@ This approach fits the current codebase because backend routes already own valid
 
 ## Phase 8: Umbra Frontend Flow
 
-- [ ] Use existing helpers in `apps/web/src/lib/umbra`.
-- [ ] Wire Umbra client creation after wallet connection.
-- [ ] Add register user flow with Umbra SDK.
+- [x] Use existing helpers in `apps/web/src/lib/umbra`.
+- [x] Wire Umbra client creation after wallet connection.
+- [x] Add register user flow with Umbra SDK.
 - [ ] Add encrypted balance deposit flow.
 - [ ] Add encrypted balance query flow.
 - [ ] Add encrypted balance withdrawal flow.
@@ -165,11 +167,11 @@ This approach fits the current codebase because backend routes already own valid
 
 ## Phase 10: UI State Cleanup
 
-- [ ] Replace placeholder toasts that claim successful work when no backend call happened.
+- [x] Replace placeholder toasts that claim successful work when no backend call happened for wallet connect, transaction creation, disclosure review, and mock report generation.
 - [ ] Replace hardcoded chart randomness with stable backend-derived data or deterministic placeholders.
 - [ ] Add loading states for each backend call.
 - [ ] Add empty states for no transactions, no disclosures, no reports, and no access logs.
-- [ ] Add disabled states during wallet signing and network requests.
+- [x] Add disabled states during wallet signing and network requests for connect-wallet, transaction creation, disclosure review, and mock report generation.
 - [ ] Add retry affordances for failed reads.
 - [ ] Audit contrast after wiring disabled, error, success, warning, and hover states.
 
@@ -218,4 +220,3 @@ Ask before removing any of these, because some may be intended as future afforda
 8. Access log display.
 9. Umbra real-flow wiring.
 10. Remove or wire placeholder UI symbols.
-

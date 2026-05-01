@@ -5,12 +5,14 @@ const walletSessionStorageKey = 'umbra-treasury:wallet-session:v1';
 
 export type WalletSessionState = {
 	walletAddress: string | null;
+	walletName: string | null;
 	status: 'disconnected' | 'connected';
 	lastConnectedAt: string | null;
 };
 
 const initialWalletSession: WalletSessionState = {
 	walletAddress: null,
+	walletName: null,
 	status: 'disconnected',
 	lastConnectedAt: null
 };
@@ -36,11 +38,12 @@ function createWalletSessionStore() {
 		persist(nextState);
 	}
 
-	return {
-		subscribe,
-		connect(walletAddress: string) {
+		return {
+			subscribe,
+		connect(walletAddress: string, walletName?: string) {
 			setAndPersist({
 				walletAddress,
+				walletName: walletName ?? null,
 				status: 'connected',
 				lastConnectedAt: new Date().toISOString()
 			});
@@ -74,6 +77,7 @@ function loadPersistedWalletSession(): WalletSessionState {
 
 		return {
 			walletAddress: parsed.walletAddress,
+			walletName: parsed.walletName ?? null,
 			status: 'connected',
 			lastConnectedAt: parsed.lastConnectedAt ?? null
 		};

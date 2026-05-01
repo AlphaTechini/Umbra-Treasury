@@ -17,8 +17,12 @@
 		await runRequestAction(getWalletConnectAction(walletName), async () => {
 			toasts.add(`Connecting ${walletName}...`, 'info');
 			const result = await connectWalletAndLoadDao(walletName);
+			const registrationCount = result.umbraRegistrationSignatures.length;
 
-			toasts.add(`Connected ${result.walletName} and loaded ${result.daoSlug}.`, 'success');
+			toasts.add(
+				`Connected ${result.walletName}, registered Umbra user${registrationCount ? ` (${registrationCount} tx)` : ''}, and loaded ${result.daoSlug}.`,
+				'success'
+			);
 			await goto('/dashboard');
 		});
 	}
