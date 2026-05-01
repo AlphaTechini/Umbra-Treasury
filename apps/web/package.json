@@ -20,6 +20,7 @@
     "@tailwindcss/vite": "4.2.4",
     "@umbra-privacy/sdk": "4.0.0",
     "@umbra-privacy/web-zk-prover": "2.0.1",
+    "@wallet-standard/app": "1.1.0",
     "clsx": "2.1.1",
     "lucide-svelte": "1.0.1",
     "svelte": "5.55.5",

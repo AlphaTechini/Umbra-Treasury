@@ -86,9 +86,17 @@ Current frontend structure:
 
 - routes own pages and SvelteKit server endpoints.
 - lib owns shared helpers, loading state, toasts, and reusable components.
+- `apps/web/src/lib/api` owns typed Fastify backend API helpers.
+- `apps/web/src/lib/session` owns browser-side wallet address and active DAO session state.
 - `apps/web/src/lib/umbra` owns route-agnostic Umbra SDK client/session helpers, encrypted balance operations, and compliance grant helpers.
 - SvelteKit uses `@sveltejs/adapter-vercel`.
 - Gemini insight generation must read `GEMINI_API_KEY` through SvelteKit private environment access only.
+
+Frontend session persistence stores only public-safe wallet address and DAO metadata in `localStorage`. It must not store signatures, authorization messages, viewing keys, private key material, or private treasury payloads. Sensitive actions still require fresh wallet authorization.
+
+Wallet connect uses Wallet Standard discovery for compatible Solana wallets. On connect, the frontend persists only the public wallet address, calls `POST /users`, then loads the first DAO owned by that wallet or creates a default public DAO workspace with the wallet address as the treasury address.
+
+The `umbra-demo` slug remains a fallback for legacy demo pages, while the connect-wallet route now prefers wallet-owned DAO discovery and create-on-connect.
 
 Drizzle is the backend ORM. The schema lives in `apps/api/src/db/schema.ts`, migrations live in `migrations`, and `drizzle.config.ts` controls migration tooling.
 

@@ -1,5 +1,18 @@
 <script lang="ts">
 	import Sidebar from '$lib/components/Sidebar.svelte';
+	import { pendingRequestActions, runRequestAction } from '$lib/loading';
+	import { toasts } from '$lib/toasts';
+
+	const sendPrivateTransactionAction = 'transactions:send-private';
+
+	async function handleSendPrivateTransaction(event: SubmitEvent) {
+		event.preventDefault();
+		await runRequestAction(sendPrivateTransactionAction, async () => {
+			toasts.add('Preparing private transaction request...', 'info');
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+			toasts.add('Transaction backend integration is not wired yet.', 'warning');
+		});
+	}
 </script>
 
 <svelte:head>
@@ -36,7 +49,10 @@
 				</div>
 
 				<!-- Form Card -->
-				<form class="bg-[#18181b] border border-[#27272a] rounded-xl p-6 flex flex-col gap-5">
+				<form
+					class="bg-[#18181b] border border-[#27272a] rounded-xl p-6 flex flex-col gap-5"
+					onsubmit={handleSendPrivateTransaction}
+				>
 					<!-- Recipient Address -->
 					<div class="flex flex-col gap-2">
 						<label class="font-label-mono text-label-mono text-zinc-400 uppercase" for="recipient">Recipient Address</label>
@@ -109,9 +125,13 @@
 						<a href="/dashboard" class="px-6 py-3 border border-[#27272a] rounded-lg font-data-point text-data-point text-zinc-300 hover:bg-[#27272a] transition-colors">
 							Cancel
 						</a>
-						<button type="submit" class="flex-1 bg-[#10b981] text-[#002113] font-bold py-3 rounded-lg text-sm tracking-wide hover:bg-[#4edea3] transition-colors active:scale-[0.99] flex items-center justify-center gap-2">
+						<button
+							type="submit"
+							disabled={$pendingRequestActions[sendPrivateTransactionAction]}
+							class="flex-1 bg-[#10b981] text-[#002113] font-bold py-3 rounded-lg text-sm tracking-wide hover:bg-[#4edea3] transition-colors active:scale-[0.99] flex items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-60"
+						>
 							<span class="material-symbols-outlined text-[18px]">lock</span>
-							Send Private Transaction
+							{$pendingRequestActions[sendPrivateTransactionAction] ? 'Sending...' : 'Send Private Transaction'}
 						</button>
 					</div>
 				</form>

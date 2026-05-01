@@ -11,30 +11,49 @@
 		Zap,
 		Download
 	} from 'lucide-svelte';
+	import { getDaoReports } from '$lib/api/reports';
+	import type { Report } from '$lib/api/types';
 	import Sidebar from '$lib/components/Sidebar.svelte';
+	import { formatDate, formatLabel } from '$lib/display';
 	import { fade, fly } from 'svelte/transition';
 	import { onMount } from 'svelte';
 	import { toasts } from '$lib/toasts';
-	import { processRequest } from '$lib/loading';
+	import { pendingRequestActions, runRequestAction } from '$lib/loading';
+	import { daoSession } from '$lib/session';
 
 	let mounted = $state(false);
-	onMount(() => {
+	let reports = $state<Report[]>([]);
+	let isLoadingReports = $state(true);
+	let reportEmptyMessage = $state('Loading reports...');
+	const generateReportAction = 'reports:generate-custom';
+
+	onMount(async () => {
 		mounted = true;
+		const dao = await daoSession.loadDemoDao();
+
+		if (!dao) {
+			reportEmptyMessage = 'No data yet. Connect a wallet or create a DAO treasury to begin.';
+			isLoadingReports = false;
+			return;
+		}
+
+		try {
+			const response = await getDaoReports(dao.id);
+			reports = response.reports;
+			reportEmptyMessage = 'No data yet.';
+		} catch (error) {
+			reportEmptyMessage = error instanceof Error ? error.message : 'No data yet.';
+		} finally {
+			isLoadingReports = false;
+		}
 	});
 
-	const reports = [
-		{ name: 'Q3 Financial Audit', date: 'Oct 15, 2023', size: '4.2 MB', type: 'PDF' },
-		{ name: 'Tax Compliance 2023', date: 'Sep 28, 2023', size: '12.8 MB', type: 'PDF' },
-		{ name: 'Liquidity Analysis', date: 'Sep 12, 2023', size: '1.5 MB', type: 'XLSX' },
-		{ name: 'Asset Distribution', date: 'Aug 30, 2023', size: '840 KB', type: 'PDF' },
-	];
-
 	async function handleGenerateReport() {
-		toasts.add('Compiling data for custom report...', 'info');
-		await processRequest(async () => {
+		await runRequestAction(generateReportAction, async () => {
+			toasts.add('Compiling data for custom report...', 'info');
 			await new Promise(r => setTimeout(r, 2000));
+			toasts.add('Custom report generated and archived.', 'success');
 		});
-		toasts.add('Custom report generated and archived.', 'success');
 	}
 
 	function handleShare() {
@@ -63,9 +82,10 @@
 				</button>
 				<button 
 					onclick={handleGenerateReport}
-					class="px-4 py-2 bg-purple-500 text-white text-sm font-bold rounded-lg hover:bg-purple-400 transition-colors"
+					disabled={$pendingRequestActions[generateReportAction]}
+					class="px-4 py-2 bg-purple-500 text-white text-sm font-bold rounded-lg hover:bg-purple-400 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
 				>
-					Generate Custom Report
+					{$pendingRequestActions[generateReportAction] ? 'Generating...' : 'Generate Custom Report'}
 				</button>
 			</div>
 		</header>
@@ -157,23 +177,29 @@
 			<div class="glass-card p-6" in:fly={{ y: 20, delay: 600 }}>
 				<h3 class="font-bold mb-6">Generated Archives</h3>
 				<div class="space-y-4">
+					{#if isLoadingReports}
+						<p class="text-sm text-zinc-500">Loading reports...</p>
+					{:else if reports.length === 0}
+						<p class="text-sm text-zinc-500">{reportEmptyMessage}</p>
+					{:else}
 					{#each reports as report}
 						<button 
 							class="w-full flex items-center gap-4 p-3 rounded-xl border border-white/5 hover:border-white/10 hover:bg-white/5 transition-all group text-left"
-							onclick={() => toasts.add(`Opening ${report.name}...`, 'info')}
+							onclick={() => toasts.add(`Opening ${report.title}...`, 'info')}
 						>
 							<div class="w-10 h-10 rounded-lg bg-zinc-900 flex items-center justify-center group-hover:bg-purple-500 group-hover:text-white transition-colors">
 								<FileText size={18} />
 							</div>
 							<div class="flex-1">
-								<p class="text-sm font-semibold">{report.name}</p>
-								<p class="text-[10px] text-zinc-500">{report.date} • {report.size}</p>
+								<p class="text-sm font-semibold">{report.title}</p>
+								<p class="text-[10px] text-zinc-500">{formatDate(report.generatedAt)} - {formatLabel(report.source)}</p>
 							</div>
 							<div class="p-2 text-zinc-600 group-hover:text-white">
 								<Download size={16} />
 							</div>
 						</button>
 					{/each}
+					{/if}
 				</div>
 			</div>
 

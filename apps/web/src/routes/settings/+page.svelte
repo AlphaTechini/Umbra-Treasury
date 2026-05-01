@@ -3,23 +3,29 @@
 	import { fade, fly } from 'svelte/transition';
 	import { onMount } from 'svelte';
 	import { toasts } from '$lib/toasts';
-	import { processRequest } from '$lib/loading';
+	import { pendingRequestActions, runRequestAction } from '$lib/loading';
 
 	let mounted = $state(false);
+	const saveSettingsAction = 'settings:save';
+	const rotateKeysAction = 'settings:rotate-keys';
+
 	onMount(() => {
 		mounted = true;
 	});
 
 	async function handleSaveChanges() {
-		toasts.add('Verifying credentials...', 'info');
-		await processRequest(async () => {
+		await runRequestAction(saveSettingsAction, async () => {
+			toasts.add('Verifying credentials...', 'info');
 			await new Promise(r => setTimeout(r, 1200));
+			toasts.add('System parameters updated successfully.', 'success');
 		});
-		toasts.add('System parameters updated successfully.', 'success');
 	}
 
-	function handleRotateKeys() {
-		toasts.add('Authentication keys rotated. Please re-authenticate your API clients.', 'warning');
+	async function handleRotateKeys() {
+		await runRequestAction(rotateKeysAction, async () => {
+			await new Promise(r => setTimeout(r, 1000));
+			toasts.add('Authentication keys rotated. Please re-authenticate your API clients.', 'warning');
+		});
 	}
 
 	let tfaEnabled = $state(true);
@@ -76,9 +82,10 @@
 					</div>
 					<button 
 						onclick={handleRotateKeys}
-						class="w-full py-2 border border-purple-500/30 text-purple-400 text-xs font-bold rounded-lg hover:bg-purple-500 hover:text-white transition-all"
+						disabled={$pendingRequestActions[rotateKeysAction]}
+						class="w-full py-2 border border-purple-500/30 text-purple-400 text-xs font-bold rounded-lg hover:bg-purple-500 hover:text-white transition-all disabled:cursor-not-allowed disabled:opacity-60"
 					>
-						Rotate API Keys
+						{$pendingRequestActions[rotateKeysAction] ? 'Rotating...' : 'Rotate API Keys'}
 					</button>
 				</div>
 			</section>
@@ -92,9 +99,10 @@
 				</button>
 				<button 
 					onclick={handleSaveChanges}
-					class="px-6 py-2 rounded-lg text-sm font-bold bg-white text-black hover:opacity-90 transition-opacity"
+					disabled={$pendingRequestActions[saveSettingsAction]}
+					class="px-6 py-2 rounded-lg text-sm font-bold bg-white text-black hover:opacity-90 transition-opacity disabled:cursor-not-allowed disabled:opacity-60"
 				>
-					Save Changes
+					{$pendingRequestActions[saveSettingsAction] ? 'Saving...' : 'Save Changes'}
 				</button>
 			</div>
 		</div>

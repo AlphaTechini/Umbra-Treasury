@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { db } from "../db/client.js";
 import { daos, users } from "../db/schema.js";
 
@@ -55,6 +55,18 @@ export async function findDaoBySlug(slug: string) {
     .from(daos)
     .innerJoin(users, eq(daos.ownerId, users.id))
     .where(eq(daos.slug, slug))
+    .limit(1);
+
+  return row ? { ...row.dao, owner: row.owner } : null;
+}
+
+export async function findFirstDaoByOwnerWalletAddress(walletAddress: string) {
+  const [row] = await db
+    .select({ dao: daos, owner: users })
+    .from(daos)
+    .innerJoin(users, eq(daos.ownerId, users.id))
+    .where(eq(users.walletAddress, walletAddress))
+    .orderBy(asc(daos.createdAt))
     .limit(1);
 
   return row ? { ...row.dao, owner: row.owner } : null;

@@ -39,7 +39,7 @@
 								</div>
 								<div>
 									<h2 class="font-h3 text-h3 text-white leading-none">Decrypt Payload</h2>
-									<p class="text-[12px] text-zinc-400 font-medium mt-1">tx_9210...2k1</p>
+									<p class="text-[12px] text-zinc-400 font-medium mt-1">No transaction selected yet</p>
 								</div>
 							</div>
 						</div>
@@ -98,33 +98,33 @@
 						<div class="p-8 space-y-8">
 							<div class="text-center">
 								<span class="text-zinc-500 font-label-mono text-label-mono uppercase">Amount revealed</span>
-								<h3 class="text-[42px] font-black text-[#10b981] tracking-tight mt-2">$45,200.00</h3>
+								<h3 class="text-[42px] font-black text-[#10b981] tracking-tight mt-2">No data yet</h3>
 							</div>
 
 							<div class="grid grid-cols-1 gap-px bg-[#27272a] border border-[#27272a] rounded-lg overflow-hidden">
 								<div class="bg-[#0d0e15] p-4 flex justify-between items-center">
 									<span class="text-zinc-500 text-xs font-medium">Recipient Address</span>
 									<div class="flex items-center gap-2">
-										<span class="font-mono text-xs text-white">0x742d...f44e</span>
+										<span class="font-mono text-xs text-white">No data yet</span>
 										<button class="material-symbols-outlined text-[16px] text-zinc-500 hover:text-white">content_copy</button>
 									</div>
 								</div>
 								<div class="bg-[#0d0e15] p-4 flex justify-between items-center">
 									<span class="text-zinc-500 text-xs font-medium">Execution Date</span>
-									<span class="text-xs text-white">Oct 24, 2023 • 14:32 UTC</span>
+									<span class="text-xs text-white">No data yet</span>
 								</div>
 								<div class="bg-[#0d0e15] p-4 flex justify-between items-center">
 									<span class="text-zinc-500 text-xs font-medium">Category</span>
 									<div class="flex items-center gap-2 px-2 py-1 rounded bg-[#10b981]/10 border border-[#10b981]/20">
 										<span class="w-1.5 h-1.5 rounded-full bg-[#10b981]"></span>
-										<span class="text-[10px] font-bold text-[#10b981] uppercase tracking-wider">Infrastructure</span>
+										<span class="text-[10px] font-bold text-[#10b981] uppercase tracking-wider">No data yet</span>
 									</div>
 								</div>
 								<div class="bg-[#0d0e15] p-4 flex justify-between items-center">
 									<span class="text-zinc-500 text-xs font-medium">Privacy Status</span>
 									<div class="flex items-center gap-1.5 text-[#10b981]">
 										<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
-										<span class="text-xs font-bold">Validated</span>
+										<span class="text-xs font-bold">No data yet</span>
 									</div>
 								</div>
 							</div>

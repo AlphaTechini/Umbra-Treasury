@@ -18,7 +18,7 @@ To find database readiness routes, visit [health.ts](file:///C:/Hackathons/Umbra
 
 To find user routes, visit [users.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/routes/users.ts).
 
-To find DAO routes, visit [daos.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/routes/daos.ts).
+To find DAO routes and owner DAO lookup, visit [daos.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/routes/daos.ts).
 
 To find transaction routes, visit [transactions.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/routes/transactions.ts).
 

@@ -18,7 +18,7 @@ To find enum mapping logic, visit [enumMappers.ts](file:///C:/Hackathons/Umbra%2
 
 To find user workflow logic, visit [userService.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/services/userService.ts).
 
-To find DAO workflow logic, visit [daoService.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/services/daoService.ts).
+To find DAO workflow logic and owner DAO lookup, visit [daoService.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/services/daoService.ts).
 
 To find transaction workflow logic, visit [transactionService.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/services/transactionService.ts).
 

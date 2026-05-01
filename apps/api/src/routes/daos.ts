@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
-import { createDaoWorkspace, getDaoBySlug } from "../services/daoService.js";
+import { createDaoWorkspace, getDaoBySlug, getOwnerDaoByWalletAddress } from "../services/daoService.js";
 import { getPublicSummary } from "../services/summaryService.js";
 import { parseBody, parseParams } from "../utils/validate.js";
 
@@ -17,6 +17,10 @@ const createDaoSchema = z.object({
 
 const slugParamsSchema = z.object({
   slug: z.string().min(1),
+});
+
+const ownerWalletParamsSchema = z.object({
+  walletAddress: z.string().min(1),
 });
 
 const daoIdParamsSchema = z.object({
@@ -38,6 +42,13 @@ export async function registerDaoRoutes(app: FastifyInstance): Promise<void> {
   app.get("/daos/slug/:slug", async (request) => {
     const params = parseParams(slugParamsSchema, request.params);
     const dao = await getDaoBySlug(params.slug);
+
+    return { dao };
+  });
+
+  app.get("/daos/owner/:walletAddress", async (request) => {
+    const params = parseParams(ownerWalletParamsSchema, request.params);
+    const dao = await getOwnerDaoByWalletAddress(params.walletAddress);
 
     return { dao };
   });

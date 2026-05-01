@@ -1,5 +1,10 @@
 import { createAccessLog } from "../repositories/accessLogRepository.js";
-import { createDao, findDaoById, findDaoBySlug } from "../repositories/daoRepository.js";
+import {
+  createDao,
+  findDaoById,
+  findDaoBySlug,
+  findFirstDaoByOwnerWalletAddress,
+} from "../repositories/daoRepository.js";
 import { upsertUser } from "../repositories/userRepository.js";
 import { notFound } from "../utils/apiError.js";
 import { mapBaseToken } from "./enumMappers.js";
@@ -45,6 +50,16 @@ export async function createDaoWorkspace(input: CreateDaoRequest) {
 
 export async function getDaoBySlug(slug: string) {
   const dao = await findDaoBySlug(slug);
+
+  if (!dao) {
+    throw notFound("DAO not found");
+  }
+
+  return dao;
+}
+
+export async function getOwnerDaoByWalletAddress(walletAddress: string) {
+  const dao = await findFirstDaoByOwnerWalletAddress(walletAddress);
 
   if (!dao) {
     throw notFound("DAO not found");

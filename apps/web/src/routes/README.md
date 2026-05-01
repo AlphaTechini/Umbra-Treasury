@@ -16,6 +16,8 @@ To find the app layout, visit [+layout.svelte](file:///C:/Hackathons/Umbra%20SDK
 
 To find the landing page, visit [+page.svelte](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/routes/+page.svelte).
 
+To find the wallet connect page, visit [connect-wallet/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/routes/connect-wallet/README.md).
+
 To find the dashboard page, visit [dashboard/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/routes/dashboard/README.md).
 
 To find the transactions page, visit [transactions/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/routes/transactions/README.md).

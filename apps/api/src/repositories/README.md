@@ -16,7 +16,7 @@ The tradeoff is a few small pass-through modules, but it keeps query shape chang
 
 To find user persistence logic, visit [userRepository.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/repositories/userRepository.ts).
 
-To find DAO persistence logic, visit [daoRepository.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/repositories/daoRepository.ts).
+To find DAO persistence and owner wallet lookup logic, visit [daoRepository.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/repositories/daoRepository.ts).
 
 To find treasury transaction persistence logic, visit [transactionRepository.ts](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/repositories/transactionRepository.ts).
 

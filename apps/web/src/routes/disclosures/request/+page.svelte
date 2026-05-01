@@ -1,5 +1,15 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { pendingRequestActions, runRequestAction } from '$lib/loading';
+
+	const submitDisclosureRequestAction = 'disclosures:request:create';
+
+	async function handleSubmitDisclosureRequest(event: SubmitEvent) {
+		event.preventDefault();
+		await runRequestAction(submitDisclosureRequestAction, async () => {
+			await goto('/disclosures');
+		});
+	}
 </script>
 
 <svelte:head>
@@ -21,7 +31,10 @@
 		</div>
 
 		<!-- Form Card -->
-		<form class="bg-[#18181b] border border-[#27272a] rounded-xl p-6 flex flex-col gap-6" onsubmit={(e) => { e.preventDefault(); goto('/disclosures'); }}>
+		<form
+			class="bg-[#18181b] border border-[#27272a] rounded-xl p-6 flex flex-col gap-6"
+			onsubmit={handleSubmitDisclosureRequest}
+		>
 			<!-- Input: Name -->
 			<div class="flex flex-col gap-2">
 				<label class="font-label-mono text-label-mono text-zinc-400" for="name">Name</label>
@@ -109,9 +122,10 @@
 				</button>
 				<button
 					type="submit"
-					class="px-4 py-3 bg-[#10b981] rounded font-data-point text-data-point text-[#002113] hover:bg-[#4edea3] transition-all w-2/3 flex justify-center items-center gap-2"
+					disabled={$pendingRequestActions[submitDisclosureRequestAction]}
+					class="px-4 py-3 bg-[#10b981] rounded font-data-point text-data-point text-[#002113] hover:bg-[#4edea3] transition-all w-2/3 flex justify-center items-center gap-2 disabled:cursor-not-allowed disabled:opacity-60"
 				>
-					<span>Submit Request</span>
+					<span>{$pendingRequestActions[submitDisclosureRequestAction] ? 'Submitting...' : 'Submit Request'}</span>
 					<span class="material-symbols-outlined text-[18px]">send</span>
 				</button>
 			</div>
