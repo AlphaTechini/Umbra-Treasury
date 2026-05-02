@@ -3,9 +3,10 @@
 
 	const navItems = [
 		{ href: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
-		{ href: '/transactions/add', icon: 'receipt_long', label: 'Transactions' },
+		{ href: '/transactions', icon: 'receipt_long', label: 'Transactions' },
+		{ href: '/umbra', icon: 'encrypted', label: 'Umbra Flows' },
 		{ href: '/disclosures', icon: 'visibility', label: 'Disclosure Requests' },
-		{ href: '/reports/public', icon: 'assessment', label: 'Reports' },
+		{ href: '/reports', icon: 'assessment', label: 'Reports' },
 	];
 </script>
 

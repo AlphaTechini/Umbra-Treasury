@@ -64,13 +64,13 @@ This approach fits the current codebase because backend routes already own valid
 
 ## Phase 4: Dashboard Integration
 
-- [ ] Replace static KPI values in `apps/web/src/routes/dashboard/+page.svelte`.
-- [ ] Call `GET /daos/:daoId/summary`.
-- [ ] Map `summary.totals.income`, `summary.totals.expenses`, `summary.totals.net`, and `summary.totals.transactionCount` to KPI cards.
-- [ ] Render `summary.categoryBreakdown` for category-level display.
-- [ ] Show privacy note from `summary.privacy.note`.
-- [ ] Add loading, error, and no-transactions states.
-- [ ] Keep sensitive transaction details out of the dashboard unless they are public-safe fields.
+- [x] Replace static KPI values in `apps/web/src/routes/dashboard/+page.svelte`.
+- [x] Call `GET /daos/:daoId/summary`.
+- [x] Map `summary.totals.income`, `summary.totals.expenses`, `summary.totals.net`, and `summary.totals.transactionCount` to KPI cards.
+- [x] Render `summary.categoryBreakdown` for category-level display.
+- [x] Show privacy note from `summary.privacy.note`.
+- [x] Add loading, error, and no-transactions states.
+- [x] Keep sensitive transaction details out of the dashboard unless they are public-safe fields.
 
 ## Phase 5: Transactions Integration
 
@@ -102,13 +102,13 @@ This approach fits the current codebase because backend routes already own valid
 
 ## Phase 6: Disclosure Request Integration
 
-- [ ] Wire `apps/web/src/routes/disclosures/request/+page.svelte` to `POST /daos/:daoId/disclosure-requests`.
-- [ ] Fix enum mappings:
+- [x] Wire `apps/web/src/routes/disclosures/request/+page.svelte` to `POST /daos/:daoId/disclosure-requests`.
+- [x] Fix enum mappings:
   - Review -> `community_review` or `internal_review`
   - Single Tx -> `single_transaction`
   - Category -> `category`
   - Date Range -> `date_range`
-- [ ] Add optional scope-specific fields:
+- [x] Add optional scope-specific fields:
   - `transactionId`
   - `category`
   - `startDate`
@@ -123,20 +123,20 @@ This approach fits the current codebase because backend routes already own valid
 ## Phase 7: Reports Integration
 
 - [x] Wire report list pages to `GET /daos/:daoId/reports`.
-- [ ] Wire report detail pages to `GET /reports/:reportId` where needed.
-- [ ] Wire public summary report generation to `POST /daos/:daoId/summary-report`.
+- [x] Wire report detail pages to `GET /reports/:reportId` where needed.
+- [x] Wire public summary report generation to `POST /daos/:daoId/summary-report`.
 - [x] Wire mock disclosure report generation to `POST /disclosure-requests/:requestId/mock-report`.
-- [ ] Wire Umbra compliance report ingestion to `POST /disclosure-requests/:requestId/umbra-report`.
+- [x] Wire Umbra compliance report ingestion to `POST /disclosure-requests/:requestId/umbra-report`.
 - [x] Generate wallet authorization for mock report creation:
   - `report:mock:create`
-- [ ] Generate wallet authorization for Umbra report creation after real grant issuance is wired:
+- [x] Generate wallet authorization for Umbra report creation after grant reference entry:
   - `report:umbra:create`
-- [ ] Display report source clearly:
+- [x] Display report source clearly:
   - `summary_only`
   - `umbra_compliance`
   - `mock`
-- [ ] Display verification status clearly and never mark frontend-submitted Umbra reports as verified.
-- [ ] Keep mock output labeled as mock/demo data.
+- [x] Display verification status clearly and never mark frontend-submitted Umbra reports as verified.
+- [x] Keep mock output labeled as mock/demo data.
 
 ## Phase 8: Umbra Frontend Flow
 
@@ -169,9 +169,9 @@ This approach fits the current codebase because backend routes already own valid
 
 - [x] Replace placeholder toasts that claim successful work when no backend call happened for wallet connect, transaction creation, disclosure review, and mock report generation.
 - [ ] Replace hardcoded chart randomness with stable backend-derived data or deterministic placeholders.
-- [ ] Add loading states for each backend call.
-- [ ] Add empty states for no transactions, no disclosures, no reports, and no access logs.
-- [x] Add disabled states during wallet signing and network requests for connect-wallet, transaction creation, disclosure review, and mock report generation.
+- [x] Add loading states for each backend call currently wired in dashboard, disclosures, and reports.
+- [x] Add empty states for no transactions, no disclosures, and no reports.
+- [x] Add disabled states during wallet signing and network requests for connect-wallet, transaction creation, disclosure request creation, disclosure review, report generation, and report ingestion.
 - [ ] Add retry affordances for failed reads.
 - [ ] Audit contrast after wiring disabled, error, success, warning, and hover states.
 
@@ -196,7 +196,7 @@ Ask before removing any of these, because some may be intended as future afforda
 ## Phase 12: Verification Checklist
 
 - [ ] Run `pnpm build:api`.
-- [ ] Run `pnpm check:web`.
+- [x] Run `pnpm check:web`.
 - [ ] Run `pnpm build:web`.
 - [ ] Start backend with `pnpm dev:api`.
 - [ ] Start frontend with `pnpm dev:web`.

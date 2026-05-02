@@ -18,8 +18,12 @@ To find toast display logic, visit [ToastContainer.svelte](file:///C:/Hackathons
 
 To find the reusable Umbra operation status panel, visit [UmbraStatusPanel.svelte](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/components/UmbraStatusPanel.svelte).
 
+To find sanitized access activity display logic, visit [AccessLogPanel.svelte](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/components/AccessLogPanel.svelte).
+
 ## Component Connections
 
 The shared frontend library can be found in [../README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/README.md).
 
 The Umbra operation status component can be found in [UmbraStatusPanel.svelte](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/components/UmbraStatusPanel.svelte).
+
+The access log UI can be found in [AccessLogPanel.svelte](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/components/AccessLogPanel.svelte).

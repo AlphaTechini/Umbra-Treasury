@@ -100,6 +100,8 @@ Wallet connect now creates an Umbra client session from the returned Wallet Stan
 
 Frontend wallet authorization uses fresh browser wallet signatures over the exact backend JSON message. The frontend stores the public wallet name only to reconnect the same wallet for signing; it must not store signatures, authorization messages, or private key material.
 
+Dashboard, disclosure request, and report pages now prefer the active wallet-owned DAO session before falling back to the legacy `umbra-demo` slug. Reports can ingest already-issued Umbra compliance grant references with a fresh `report:umbra:create` wallet authorization, but frontend-submitted Umbra reports must remain `unverified` until backend on-chain verification exists.
+
 The `umbra-demo` slug remains a fallback for legacy demo pages, while the connect-wallet route now prefers wallet-owned DAO discovery and create-on-connect.
 
 Drizzle is the backend ORM. The schema lives in `apps/api/src/db/schema.ts`, migrations live in `migrations`, and `drizzle.config.ts` controls migration tooling.
@@ -180,6 +182,10 @@ Sensitive backend wallet authorization messages use app `umbra-treasury-disclosu
 - `report:umbra:create`
 
 Frontend Umbra SDK integration now starts in `apps/web/src/lib/umbra` and intentionally avoids route-page wiring until the pages are ready.
+
+Real encrypted balance operations are now wired through `apps/web/src/routes/umbra`. Deposit and withdrawal run in the browser through the active Umbra SDK session, then store only public-safe operation references through the backend transaction API. Encrypted balance query results remain browser-only.
+
+Browser-issued Umbra compliance grants are handled from the reports page before backend grant-reference ingestion. The backend report remains `unverified` until on-chain grant verification exists.
 
 Required public frontend env values for real Umbra client creation:
 

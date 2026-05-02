@@ -8,19 +8,19 @@
 	<div class="flex justify-between items-center h-14 px-6 max-w-full">
 		<div class="text-lg font-bold tracking-tighter text-zinc-50">Umbra Treasury</div>
 		<div class="hidden md:flex items-center gap-8">
-			<a class="font-sans text-sm tracking-tight font-medium text-emerald-500 font-semibold border-b border-emerald-500 pb-[17px] pt-[18px]" href="#">Protocol</a>
-			<a class="font-sans text-sm tracking-tight font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 transition-colors duration-150 px-2 py-1 rounded" href="#">Governance</a>
-			<a class="font-sans text-sm tracking-tight font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 transition-colors duration-150 px-2 py-1 rounded" href="#">Privacy</a>
-			<a class="font-sans text-sm tracking-tight font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 transition-colors duration-150 px-2 py-1 rounded" href="#">Analytics</a>
+			<a class="font-sans text-sm tracking-tight font-medium text-emerald-500 font-semibold border-b border-emerald-500 pb-[17px] pt-[18px]" href="#protocol">Protocol</a>
+			<a class="font-sans text-sm tracking-tight font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 transition-colors duration-150 px-2 py-1 rounded" href="/disclosures">Governance</a>
+			<a class="font-sans text-sm tracking-tight font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 transition-colors duration-150 px-2 py-1 rounded" href="#privacy">Privacy</a>
+			<a class="font-sans text-sm tracking-tight font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 transition-colors duration-150 px-2 py-1 rounded" href="/reports">Analytics</a>
 		</div>
 		<div class="flex items-center gap-4">
 			<div class="hidden sm:flex items-center gap-1">
-				<button class="text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 transition-colors duration-150 p-1.5 rounded flex items-center justify-center">
+				<a href="/connect-wallet" aria-label="Connect wallet" class="text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 transition-colors duration-150 p-1.5 rounded flex items-center justify-center">
 					<span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
-				</button>
-				<button class="text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 transition-colors duration-150 p-1.5 rounded flex items-center justify-center">
+				</a>
+				<a href="/umbra" aria-label="Open Umbra operations" class="text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 transition-colors duration-150 p-1.5 rounded flex items-center justify-center">
 					<span class="material-symbols-outlined text-[20px]">terminal</span>
-				</button>
+				</a>
 			</div>
 			<a href="/connect-wallet" class="font-sans text-sm tracking-tight font-medium text-emerald-500 border border-zinc-800 px-4 py-1.5 rounded hover:bg-zinc-900 transition-colors duration-150">
 				Connect Wallet
@@ -45,7 +45,7 @@
 				<a href="/dashboard" class="w-full sm:w-auto bg-[#10b981] text-[#003824] font-data-point text-data-point px-6 py-2 rounded hover:bg-[#4edea3] transition-colors border border-[#10b981]">
 					Create Private Treasury
 				</a>
-				<a href="/public-treasury" class="w-full sm:w-auto bg-transparent text-[#e3e1ec] font-data-point text-data-point px-6 py-2 rounded border border-[#3c4a42] hover:border-[#4edea3] transition-colors">
+				<a href="/reports/public" class="w-full sm:w-auto bg-transparent text-[#e3e1ec] font-data-point text-data-point px-6 py-2 rounded border border-[#3c4a42] hover:border-[#4edea3] transition-colors">
 					View Public Treasury
 				</a>
 			</div>
@@ -53,7 +53,7 @@
 	</section>
 
 	<!-- Problem / Solution Bento Grid -->
-	<section class="border-b border-[#3c4a42]">
+	<section id="privacy" class="border-b border-[#3c4a42]">
 		<div class="max-w-[1280px] mx-auto px-6 py-12">
 			<div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
 				<!-- Problem Card -->
@@ -89,7 +89,7 @@
 	</section>
 
 	<!-- How It Works Flow -->
-	<section class="border-b border-[#3c4a42] bg-[#0d0e15]">
+	<section id="protocol" class="border-b border-[#3c4a42] bg-[#0d0e15]">
 		<div class="max-w-[1280px] mx-auto px-6 py-12">
 			<div class="mb-12 flex flex-col gap-2 border-l-2 border-[#10b981] pl-4">
 				<h2 class="font-h2 text-h2 text-[#e3e1ec]">Execution Flow</h2>
@@ -166,10 +166,10 @@
 	<div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
 		<div class="text-zinc-400 font-semibold font-sans text-xs uppercase tracking-widest">Umbra Treasury</div>
 		<div class="flex flex-wrap justify-center gap-x-8 gap-y-4">
-			<a class="font-sans text-xs uppercase tracking-widest text-zinc-500 hover:text-emerald-500 transition-colors opacity-80 hover:opacity-100" href="#">Github</a>
-			<a class="font-sans text-xs uppercase tracking-widest text-zinc-500 hover:text-emerald-500 transition-colors opacity-80 hover:opacity-100" href="#">Documentation</a>
-			<a class="font-sans text-xs uppercase tracking-widest text-zinc-500 hover:text-emerald-500 transition-colors opacity-80 hover:opacity-100" href="#">Audits</a>
-			<a class="font-sans text-xs uppercase tracking-widest text-zinc-500 hover:text-emerald-500 transition-colors opacity-80 hover:opacity-100" href="#">Discord</a>
+			<a class="font-sans text-xs uppercase tracking-widest text-zinc-500 hover:text-emerald-500 transition-colors opacity-80 hover:opacity-100" href="/dashboard">Dashboard</a>
+			<a class="font-sans text-xs uppercase tracking-widest text-zinc-500 hover:text-emerald-500 transition-colors opacity-80 hover:opacity-100" href="/umbra">Umbra Flows</a>
+			<a class="font-sans text-xs uppercase tracking-widest text-zinc-500 hover:text-emerald-500 transition-colors opacity-80 hover:opacity-100" href="/reports">Reports</a>
+			<a class="font-sans text-xs uppercase tracking-widest text-zinc-500 hover:text-emerald-500 transition-colors opacity-80 hover:opacity-100" href="/connect-wallet">Connect</a>
 		</div>
 		<div class="font-sans text-xs uppercase tracking-widest text-zinc-500 text-center md:text-right">
 			© 2024 Umbra Treasury. Institutional Privacy.

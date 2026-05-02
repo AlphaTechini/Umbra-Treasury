@@ -10,7 +10,7 @@ The API client is intentionally thin. Route pages and future stores can import t
 
 Environment parsing lives in [config.ts](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/api/config.ts). It reads `PUBLIC_API_BASE_URL`, which is safe for browser code because it is only an API origin, not a secret.
 
-Shared request handling lives in [http.ts](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/api/http.ts). The wrapper normalizes backend `{ error }` responses into thrown `ApiClientError` instances.
+Shared request handling lives in [http.ts](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/api/http.ts). The wrapper normalizes backend `{ error }` responses into thrown `ApiClientError` instances and retries transient `GET` failures without retrying state-changing writes.
 
 Domain-specific route helpers live in separate files so each backend surface can evolve without creating one large client module. The tradeoff is a few more small files, but the call sites stay clear and the integration remains easier to review.
 

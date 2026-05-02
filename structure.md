@@ -120,6 +120,8 @@ The frontend Umbra SDK integration can be found in [apps/web/src/lib/umbra/READM
 
 The active in-memory Umbra client session can be found in [apps/web/src/lib/umbra/session.ts](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/umbra/session.ts).
 
+The real Umbra operations page can be found in [apps/web/src/routes/umbra/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/routes/umbra/README.md).
+
 The Umbra resource list can be found in [Resources.md](./Resources.md).
 
 ## Folder READMEs
@@ -146,7 +148,15 @@ The `apps/web/src/lib/umbra` folder README can be found in [apps/web/src/lib/umb
 
 The `apps/web/src/routes` folder README can be found in [apps/web/src/routes/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/routes/README.md).
 
+The `apps/web/src/routes/disclosures` folder README can be found in [apps/web/src/routes/disclosures/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/routes/disclosures/README.md).
+
+The `apps/web/src/routes/disclosures/request` folder README can be found in [apps/web/src/routes/disclosures/request/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/routes/disclosures/request/README.md).
+
+The `apps/web/src/routes/reports/[reportId]` folder README can be found in [apps/web/src/routes/reports/[reportId]/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/routes/reports/[reportId]/README.md).
+
 The `apps/web/src/routes/connect-wallet` folder README can be found in [apps/web/src/routes/connect-wallet/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/routes/connect-wallet/README.md).
+
+The `apps/web/src/routes/umbra` folder README can be found in [apps/web/src/routes/umbra/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/routes/umbra/README.md).
 
 The `apps/api/src` folder README can be found in [apps/api/src/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/api/src/README.md).
 

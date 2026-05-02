@@ -3,19 +3,23 @@
 	import { getDaoDisclosureRequests } from '$lib/api/disclosures';
 	import { getDaoTransactions } from '$lib/api/transactions';
 	import type { DisclosureRequest, PublicSummary, TreasuryTransaction } from '$lib/api/types';
+	import AccessLogPanel from '$lib/components/AccessLogPanel.svelte';
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { formatCurrency, formatDate, formatLabel, shortId } from '$lib/display';
 	import { daoSession } from '$lib/session';
 	import { onMount } from 'svelte';
+	import { get } from 'svelte/store';
 
 	let summary = $state<PublicSummary | null>(null);
 	let transactions = $state<TreasuryTransaction[]>([]);
 	let disclosureRequests = $state<DisclosureRequest[]>([]);
+	let activeDaoId = $state<string | null>(null);
 	let isLoadingData = $state(true);
 	let emptyMessage = $state('Loading treasury data...');
+	let transactionFilter = $state<'all' | 'pending' | 'revealed'>('all');
 
 	onMount(async () => {
-		const dao = await daoSession.loadDemoDao();
+		const dao = get(daoSession).dao ?? (await daoSession.loadDemoDao());
 
 		if (!dao) {
 			emptyMessage = 'No data yet. Connect a wallet or create a DAO treasury to begin.';
@@ -24,6 +28,7 @@
 		}
 
 		try {
+			activeDaoId = dao.id;
 			const [summaryResponse, transactionResponse, disclosureResponse] = await Promise.all([
 				getDaoSummary(dao.id),
 				getDaoTransactions(dao.id),
@@ -42,7 +47,22 @@
 	});
 
 	const pendingDisclosureCount = $derived(disclosureRequests.filter((request) => request.status === 'pending').length);
-	const recentTransactions = $derived(transactions.slice(0, 5));
+	const recentTransactions = $derived(
+		transactions
+			.filter((transaction) => {
+				if (transactionFilter === 'pending') {
+					return transaction.umbraStatus === 'pending' || transaction.privacyStatus === 'summary_included';
+				}
+
+				if (transactionFilter === 'revealed') {
+					return transaction.privacyStatus === 'disclosure_available';
+				}
+
+				return true;
+			})
+			.slice(0, 5)
+	);
+	const categoryEntries = $derived(Object.entries(summary?.categoryBreakdown ?? {}));
 
 	function getTransactionStatus(transaction: TreasuryTransaction) {
 		return transaction.privacyStatus === 'disclosure_available' ? 'Revealed' : formatLabel(transaction.privacyStatus);
@@ -120,14 +140,52 @@
 				</div>
 			</div>
 
+			<div class="bg-[#18181b] border border-[#27272a] rounded-lg p-6">
+				<div class="flex items-center justify-between gap-4 mb-5">
+					<div>
+						<h2 class="font-h3 text-h3 text-white">Category Breakdown</h2>
+						<p class="text-sm text-zinc-500 mt-1">{summary?.privacy.note ?? 'Public-safe category totals from the backend summary.'}</p>
+					</div>
+					<span class="text-[10px] uppercase font-bold px-2 py-1 rounded border border-[#10b981]/30 bg-[#10b981]/10 text-[#10b981]">
+						{formatLabel(summary?.privacy.source)}
+					</span>
+				</div>
+				{#if isLoadingData}
+					<p class="text-sm text-zinc-500">Loading category data...</p>
+				{:else if categoryEntries.length === 0}
+					<p class="text-sm text-zinc-500">{emptyMessage}</p>
+				{:else}
+					<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+						{#each categoryEntries as [category, data]}
+							<div class="bg-[#0d0e15] border border-[#27272a] rounded p-4 flex flex-col gap-3">
+								<div class="flex items-center justify-between">
+									<span class="text-sm font-bold text-white">{formatLabel(category)}</span>
+									<span class="text-xs text-zinc-500">{data.transactionCount} tx</span>
+								</div>
+								<div class="grid grid-cols-2 gap-3 text-xs">
+									<div>
+										<p class="text-zinc-500 uppercase font-bold">Income</p>
+										<p class="text-[#10b981] mt-1">{formatCurrency(data.income)}</p>
+									</div>
+									<div>
+										<p class="text-zinc-500 uppercase font-bold">Expenses</p>
+										<p class="text-red-400 mt-1">{formatCurrency(data.expenses)}</p>
+									</div>
+								</div>
+							</div>
+						{/each}
+					</div>
+				{/if}
+			</div>
+
 			<div class="bg-[#18181b] border border-[#27272a] rounded-lg overflow-hidden">
 				<div class="px-6 py-4 border-b border-[#27272a] flex items-center justify-between">
 					<h2 class="font-h3 text-h3 text-white">Recent Transactions</h2>
-					<div class="flex items-center gap-2">
-						<div class="flex border border-[#27272a] rounded-lg p-1 bg-[#0d0e15]">
-							<button class="px-3 py-1 text-xs font-bold bg-[#10b981] text-black rounded">All</button>
-							<button class="px-3 py-1 text-xs font-bold text-zinc-400 hover:text-white rounded transition-colors">Pending</button>
-							<button class="px-3 py-1 text-xs font-bold text-zinc-400 hover:text-white rounded transition-colors">Revealed</button>
+						<div class="flex items-center gap-2">
+							<div class="flex border border-[#27272a] rounded-lg p-1 bg-[#0d0e15]">
+							<button onclick={() => (transactionFilter = 'all')} class="px-3 py-1 text-xs font-bold {transactionFilter === 'all' ? 'bg-[#10b981] text-[#002113]' : 'text-zinc-400 hover:text-white'} rounded transition-colors">All</button>
+							<button onclick={() => (transactionFilter = 'pending')} class="px-3 py-1 text-xs font-bold {transactionFilter === 'pending' ? 'bg-[#10b981] text-[#002113]' : 'text-zinc-400 hover:text-white'} rounded transition-colors">Pending</button>
+							<button onclick={() => (transactionFilter = 'revealed')} class="px-3 py-1 text-xs font-bold {transactionFilter === 'revealed' ? 'bg-[#10b981] text-[#002113]' : 'text-zinc-400 hover:text-white'} rounded transition-colors">Revealed</button>
 						</div>
 					</div>
 				</div>
@@ -179,6 +237,8 @@
 					</table>
 				</div>
 			</div>
+
+			<AccessLogPanel daoId={activeDaoId} />
 		</main>
 	</div>
 </div>

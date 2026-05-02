@@ -13,6 +13,16 @@
 	let disclosureRequests = $state<DisclosureRequest[]>([]);
 	let isLoadingData = $state(true);
 	let emptyMessage = $state('Loading disclosure requests...');
+	let requestFilter = $state<'pending' | 'resolved' | 'rejected'>('pending');
+	const visibleDisclosureRequests = $derived(
+		disclosureRequests.filter((request) => {
+			if (requestFilter === 'resolved') {
+				return request.status === 'approved' || request.status === 'fulfilled';
+			}
+
+			return request.status === requestFilter;
+		})
+	);
 
 	onMount(async () => {
 		const dao = get(daoSession).dao ?? (await daoSession.loadDemoDao());
@@ -134,9 +144,9 @@
 					<p class="font-body-md text-body-md text-zinc-400 mt-1">Manage external requests for private transaction data.</p>
 				</div>
 				<div class="flex gap-2 border border-[#27272a] rounded-lg p-1 bg-[#0d0e15]">
-					<button class="px-4 py-1.5 text-xs font-bold bg-zinc-800 text-white rounded transition-colors">Pending</button>
-					<button class="px-4 py-1.5 text-xs font-bold text-zinc-400 hover:text-white rounded transition-colors">Resolved</button>
-					<button class="px-4 py-1.5 text-xs font-bold text-zinc-400 hover:text-white rounded transition-colors">Rejected</button>
+					<button onclick={() => (requestFilter = 'pending')} class="px-4 py-1.5 text-xs font-bold {requestFilter === 'pending' ? 'bg-[#10b981] text-[#002113]' : 'text-zinc-400 hover:text-white'} rounded transition-colors">Pending</button>
+					<button onclick={() => (requestFilter = 'resolved')} class="px-4 py-1.5 text-xs font-bold {requestFilter === 'resolved' ? 'bg-[#10b981] text-[#002113]' : 'text-zinc-400 hover:text-white'} rounded transition-colors">Resolved</button>
+					<button onclick={() => (requestFilter = 'rejected')} class="px-4 py-1.5 text-xs font-bold {requestFilter === 'rejected' ? 'bg-[#10b981] text-[#002113]' : 'text-zinc-400 hover:text-white'} rounded transition-colors">Rejected</button>
 				</div>
 			</div>
 
@@ -159,12 +169,12 @@
 								<tr>
 									<td class="px-6 py-8 text-center text-sm text-zinc-500" colspan="7">Loading disclosure requests...</td>
 								</tr>
-							{:else if disclosureRequests.length === 0}
+							{:else if visibleDisclosureRequests.length === 0}
 								<tr>
 									<td class="px-6 py-8 text-center text-sm text-zinc-500" colspan="7">{emptyMessage}</td>
 								</tr>
 							{:else}
-								{#each disclosureRequests as req}
+								{#each visibleDisclosureRequests as req}
 									<tr class="hover:bg-[#1e1f26] transition-colors">
 										<td class="px-6 py-4 font-mono text-xs text-zinc-300">{shortId(req.id)}</td>
 										<td class="px-6 py-4 text-sm text-zinc-200">{req.requesterName}</td>
@@ -204,7 +214,11 @@
 													{$pendingRequestActions[mockReportAction] ? 'Generating...' : 'Generate Mock Report'}
 												</button>
 											{:else}
-												<button class="text-xs text-zinc-500 hover:text-zinc-300">View</button>
+												{#if req.fulfilledReportId}
+													<a href={`/reports/${req.fulfilledReportId}`} class="text-xs text-[#10b981] hover:underline font-bold">Open Report</a>
+												{:else}
+													<span class="text-xs text-zinc-500">No action</span>
+												{/if}
 											{/if}
 										</td>
 									</tr>

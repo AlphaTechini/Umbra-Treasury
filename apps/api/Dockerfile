@@ -30,5 +30,5 @@ COPY --link --from=prod-deps /app/apps/api/node_modules ./apps/api/node_modules
 COPY --link --from=build /app/apps/api/dist ./apps/api/dist
 COPY --link apps/api/package.json ./apps/api/package.json
 USER node
-EXPOSE 3001
+EXPOSE 3007
 CMD ["node", "apps/api/dist/apps/api/src/server.js"]

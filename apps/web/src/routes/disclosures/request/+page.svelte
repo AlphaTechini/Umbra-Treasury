@@ -1,14 +1,107 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { createDisclosureRequest } from '$lib/api/disclosures';
+	import type { DisclosureReason, DisclosureScope } from '$lib/api/types';
 	import { pendingRequestActions, runRequestAction } from '$lib/loading';
+	import { daoSession } from '$lib/session';
+	import { toasts } from '$lib/toasts';
+	import { get } from 'svelte/store';
 
 	const submitDisclosureRequestAction = 'disclosures:request:create';
 
 	async function handleSubmitDisclosureRequest(event: SubmitEvent) {
 		event.preventDefault();
 		await runRequestAction(submitDisclosureRequestAction, async () => {
+			const dao = get(daoSession).dao ?? (await daoSession.loadDemoDao());
+
+			if (!dao) {
+				throw new Error('Connect a wallet or create a DAO treasury before requesting disclosure.');
+			}
+
+			const formData = new FormData(event.currentTarget as HTMLFormElement);
+			const requesterName = getRequiredFormValue(formData, 'name', 'Name');
+			const reason = mapDisclosureReason(getRequiredFormValue(formData, 'reason', 'Reason'));
+			const requestedScope = mapDisclosureScope(getRequiredFormValue(formData, 'scope', 'Scope'));
+			const transactionId = getOptionalFormValue(formData, 'transactionId');
+			const category = getOptionalFormValue(formData, 'category');
+			const startDate = getOptionalDateTimeValue(formData, 'startDate');
+			const endDate = getOptionalDateTimeValue(formData, 'endDate');
+
+			if (requestedScope === 'single_transaction' && !transactionId) {
+				throw new Error('Transaction ID is required for single-transaction disclosure.');
+			}
+
+			if (requestedScope === 'category' && !category) {
+				throw new Error('Category is required for category disclosure.');
+			}
+
+			if (requestedScope === 'date_range' && (!startDate || !endDate)) {
+				throw new Error('Start and end dates are required for date-range disclosure.');
+			}
+
+			await createDisclosureRequest(dao.id, {
+				requesterName,
+				...(getOptionalFormValue(formData, 'organization') ? { requesterOrganization: getOptionalFormValue(formData, 'organization') } : {}),
+				...(getOptionalFormValue(formData, 'contact') ? { requesterContact: getOptionalFormValue(formData, 'contact') } : {}),
+				reason,
+				...(getOptionalFormValue(formData, 'message') ? { message: getOptionalFormValue(formData, 'message') } : {}),
+				requestedScope,
+				...(transactionId ? { transactionId } : {}),
+				...(category ? { category } : {}),
+				...(startDate ? { startDate } : {}),
+				...(endDate ? { endDate } : {})
+			});
+
+			toasts.add('Disclosure request submitted.', 'success');
 			await goto('/disclosures');
 		});
+	}
+
+	function getRequiredFormValue(formData: FormData, name: string, label: string) {
+		const value = String(formData.get(name) ?? '').trim();
+
+		if (!value) {
+			throw new Error(`${label} is required.`);
+		}
+
+		return value;
+	}
+
+	function getOptionalFormValue(formData: FormData, name: string) {
+		return String(formData.get(name) ?? '').trim() || undefined;
+	}
+
+	function getOptionalDateTimeValue(formData: FormData, name: string) {
+		const value = getOptionalFormValue(formData, name);
+		return value ? new Date(`${value}T00:00:00.000Z`).toISOString() : undefined;
+	}
+
+	function mapDisclosureReason(value: string): DisclosureReason {
+		if (value === 'review') {
+			return 'community_review';
+		}
+
+		if (value === 'audit' || value === 'tax' || value === 'grant_review' || value === 'community_review' || value === 'internal_review' || value === 'other') {
+			return value;
+		}
+
+		return 'other';
+	}
+
+	function mapDisclosureScope(value: string): DisclosureScope {
+		if (value === 'single') {
+			return 'single_transaction';
+		}
+
+		if (value === 'daterange') {
+			return 'date_range';
+		}
+
+		if (value === 'category' || value === 'full_report') {
+			return value;
+		}
+
+		return 'full_report';
 	}
 </script>
 
@@ -59,6 +152,17 @@
 				/>
 			</div>
 
+			<div class="flex flex-col gap-2">
+				<label class="font-label-mono text-label-mono text-zinc-400" for="contact">Contact</label>
+				<input
+					id="contact"
+					name="contact"
+					type="text"
+					placeholder="audit@example.com"
+					class="bg-[#09090b] border border-[#27272a] rounded font-body-md text-body-md text-white px-4 py-3 focus:ring-1 focus:ring-[#10b981] focus:border-[#10b981] placeholder:text-zinc-600 transition-colors"
+				/>
+			</div>
+
 			<!-- Input: Reason -->
 			<div class="flex flex-col gap-2">
 				<label class="font-label-mono text-label-mono text-zinc-400" for="reason">Reason</label>
@@ -80,7 +184,7 @@
 
 			<!-- Input: Scope -->
 			<div class="flex flex-col gap-2">
-				<label class="font-label-mono text-label-mono text-zinc-400 mb-1">Scope</label>
+				<span class="font-label-mono text-label-mono text-zinc-400 mb-1">Scope</span>
 				<div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
 					{#each [
 						{ value: 'single', label: 'Single Tx' },
@@ -94,6 +198,54 @@
 							</div>
 						</label>
 					{/each}
+				</div>
+			</div>
+
+			<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+				<div class="flex flex-col gap-2">
+					<label class="font-label-mono text-label-mono text-zinc-400" for="transactionId">Transaction ID</label>
+					<input
+						id="transactionId"
+						name="transactionId"
+						type="text"
+						placeholder="Required for Single Tx"
+						class="bg-[#09090b] border border-[#27272a] rounded font-body-md text-body-md text-white px-4 py-3 focus:ring-1 focus:ring-[#10b981] focus:border-[#10b981] placeholder:text-zinc-600 transition-colors"
+					/>
+				</div>
+				<div class="flex flex-col gap-2">
+					<label class="font-label-mono text-label-mono text-zinc-400" for="category">Category</label>
+					<select
+						id="category"
+						name="category"
+						class="appearance-none bg-[#09090b] border border-[#27272a] rounded font-body-md text-body-md text-white px-4 py-3 focus:ring-1 focus:ring-[#10b981] focus:border-[#10b981] transition-colors cursor-pointer"
+					>
+						<option value="">Optional...</option>
+						<option value="grant">Grant</option>
+						<option value="payroll">Payroll</option>
+						<option value="vendor">Vendor</option>
+						<option value="ops">Operations</option>
+						<option value="tax">Tax</option>
+						<option value="treasury_transfer">Treasury Transfer</option>
+						<option value="other">Other</option>
+					</select>
+				</div>
+				<div class="flex flex-col gap-2">
+					<label class="font-label-mono text-label-mono text-zinc-400" for="startDate">Start Date</label>
+					<input
+						id="startDate"
+						name="startDate"
+						type="date"
+						class="bg-[#09090b] border border-[#27272a] rounded font-body-md text-body-md text-white px-4 py-3 focus:ring-1 focus:ring-[#10b981] focus:border-[#10b981] transition-colors"
+					/>
+				</div>
+				<div class="flex flex-col gap-2">
+					<label class="font-label-mono text-label-mono text-zinc-400" for="endDate">End Date</label>
+					<input
+						id="endDate"
+						name="endDate"
+						type="date"
+						class="bg-[#09090b] border border-[#27272a] rounded font-body-md text-body-md text-white px-4 py-3 focus:ring-1 focus:ring-[#10b981] focus:border-[#10b981] transition-colors"
+					/>
 				</div>
 			</div>
 

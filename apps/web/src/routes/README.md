@@ -22,6 +22,8 @@ To find the dashboard page, visit [dashboard/README.md](file:///C:/Hackathons/Um
 
 To find the transactions page, visit [transactions/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/routes/transactions/README.md).
 
+To find real Umbra encrypted balance operations, visit [umbra/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/routes/umbra/README.md).
+
 To find the reports page, visit [reports/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/routes/reports/README.md).
 
 To find the settings page, visit [settings/README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/routes/settings/README.md).

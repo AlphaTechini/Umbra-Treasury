@@ -30,6 +30,26 @@ export function formatDate(value: string | null | undefined) {
 	}).format(date);
 }
 
+export function formatDateTime(value: string | null | undefined) {
+	if (!value) {
+		return 'No data yet';
+	}
+
+	const date = new Date(value);
+
+	if (Number.isNaN(date.getTime())) {
+		return 'No data yet';
+	}
+
+	return new Intl.DateTimeFormat('en-US', {
+		month: 'short',
+		day: 'numeric',
+		year: 'numeric',
+		hour: 'numeric',
+		minute: '2-digit'
+	}).format(date);
+}
+
 export function formatLabel(value: string | null | undefined) {
 	if (!value) {
 		return 'No data yet';

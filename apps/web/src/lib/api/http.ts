@@ -17,6 +17,7 @@ type ApiRequestOptions = {
 	body?: RequestBody | undefined;
 	fetcher?: typeof fetch | undefined;
 	headers?: HeadersInit | undefined;
+	retries?: number | undefined;
 };
 
 export function apiGet<T>(path: string, options: Omit<ApiRequestOptions, 'body'> = {}) {
@@ -32,6 +33,24 @@ export function apiPatch<T>(path: string, body: RequestBody, options: Omit<ApiRe
 }
 
 async function apiRequest<T>(method: string, path: string, options: ApiRequestOptions): Promise<T> {
+	const retryCount = options.retries ?? (method === 'GET' ? 2 : 0);
+
+	for (let attempt = 0; attempt <= retryCount; attempt += 1) {
+		try {
+			return await sendApiRequest<T>(method, path, options);
+		} catch (error) {
+			if (!shouldRetryRequest(error, method, attempt, retryCount)) {
+				throw error;
+			}
+
+			await waitForRetry(attempt);
+		}
+	}
+
+	throw new Error('API request retry state was exhausted unexpectedly');
+}
+
+async function sendApiRequest<T>(method: string, path: string, options: ApiRequestOptions): Promise<T> {
 	const fetcher = options.fetcher ?? fetch;
 	const response = await fetcher(`${getApiBaseUrl()}${path}`, {
 		method,
@@ -49,6 +68,22 @@ async function apiRequest<T>(method: string, path: string, options: ApiRequestOp
 	}
 
 	return payload as T;
+}
+
+function shouldRetryRequest(error: unknown, method: string, attempt: number, retryCount: number) {
+	if (method !== 'GET' || attempt >= retryCount) {
+		return false;
+	}
+
+	if (error instanceof ApiClientError) {
+		return error.status === 408 || error.status === 429 || error.status >= 500;
+	}
+
+	return true;
+}
+
+function waitForRetry(attempt: number) {
+	return new Promise((resolve) => setTimeout(resolve, 250 * 2 ** attempt));
 }
 
 async function parseResponse(response: Response): Promise<unknown> {

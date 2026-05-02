@@ -14,6 +14,8 @@ Wallet connect orchestration lives in [connectWalletFlow.ts](file:///C:/Hackatho
 
 Wallet authorization signing lives in [walletAuthorization.ts](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/session/walletAuthorization.ts). It builds the backend-required JSON message, asks the connected browser wallet to sign it, and base64-encodes the signature for Fastify verification.
 
+Umbra session recovery lives in [umbraSessionFlow.ts](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/session/umbraSessionFlow.ts). It recreates the in-memory Umbra client session from the previously selected browser wallet when a real Umbra operation needs it after reload.
+
 The session layer intentionally stores no secrets, keys, signatures, wallet authorization messages, or private treasury payloads. The tradeoff is that returning users may still need to re-sign sensitive actions, but the privacy and authorization boundary stays cleaner.
 
 The first demo DAO slug is `umbra-demo`. That gives integration pages a consistent initial target while leaving room for wallet-owned DAO discovery later.
@@ -28,6 +30,8 @@ To find connect-wallet registration and DAO bootstrap logic, visit [connectWalle
 
 To find wallet authorization message creation and signing, visit [walletAuthorization.ts](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/session/walletAuthorization.ts).
 
+To find Umbra client session recovery, visit [umbraSessionFlow.ts](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/session/umbraSessionFlow.ts).
+
 To find session exports, visit [index.ts](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/session/index.ts).
 
 ## Component Connections
@@ -39,3 +43,5 @@ The frontend route layer can be found in [../../routes/README.md](file:///C:/Hac
 The wallet adapter connection can be found in [../umbra/walletAdapter.ts](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/umbra/walletAdapter.ts).
 
 The wallet authorization system can be found in [walletAuthorization.ts](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/session/walletAuthorization.ts).
+
+The in-memory Umbra client session can be found in [../umbra/session.ts](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/umbra/session.ts).
