@@ -11,6 +11,8 @@
   "dependencies": {
     "@fastify/cors": "11.2.0",
     "@noble/curves": "2.2.0",
+    "@umbra-privacy/sdk": "4.0.0",
+    "@umbra-privacy/web-zk-prover": "2.0.1",
     "bs58": "6.0.0",
     "drizzle-orm": "0.45.2",
     "fastify": "5.8.5",
