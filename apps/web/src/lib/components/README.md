@@ -20,6 +20,8 @@ To find the reusable Umbra operation status panel, visit [UmbraStatusPanel.svelt
 
 To find sanitized access activity display logic, visit [AccessLogPanel.svelte](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/components/AccessLogPanel.svelte).
 
+To find the compliance grant confirmation dialog, visit [ConfirmComplianceGrant.svelte](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/components/ConfirmComplianceGrant.svelte).
+
 ## Component Connections
 
 The shared frontend library can be found in [../README.md](file:///C:/Hackathons/Umbra%20SDK/apps/web/src/lib/README.md).
