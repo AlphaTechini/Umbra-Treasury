@@ -5,6 +5,7 @@
 	import { formatCurrency, formatDate, formatLabel, shortId } from '$lib/display';
 	import { daoSession } from '$lib/session';
 	import { onMount } from 'svelte';
+	import { Download, Eye } from 'lucide-svelte';
 
 	type ReportTransaction = {
 		id?: string;
@@ -68,8 +69,8 @@
 					<h2 class="font-h2 text-h2 text-white">{report?.title ?? 'Auditor Report'}</h2>
 					<p class="text-zinc-400 text-sm mt-1">{report ? `${formatLabel(report.source)} - ${formatLabel(report.verificationStatus)}` : emptyMessage}</p>
 				</div>
-				<button class="bg-[#10b981] text-[#002113] font-bold text-sm px-6 py-3 rounded hover:bg-[#4edea3] transition-colors flex items-center">
-					<span class="material-symbols-outlined mr-2">file_download</span>
+				<button class="bg-[#10b981] text-[#002113] font-bold text-sm px-6 py-3 rounded hover:bg-[#4edea3] transition-colors flex items-center gap-2">
+					<Download size={18} />
 					Export Report
 				</button>
 			</div>
@@ -134,7 +135,7 @@
 											</td>
 											<td class="px-6 py-4 text-right font-data-point text-data-point text-white">{formatCurrency(tx.amountHint)}</td>
 											<td class="px-6 py-4 text-center">
-												<span class="material-symbols-outlined text-[#10b981] text-xl" style="font-variation-settings: 'FILL' 1;">visibility</span>
+												<Eye class="text-[#10b981] mx-auto" size={20} fill="currentColor" />
 											</td>
 										</tr>
 									{/each}

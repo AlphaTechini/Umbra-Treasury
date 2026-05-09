@@ -6,6 +6,7 @@
 	import { daoSession, signWalletAuthorization, walletSession } from '$lib/session';
 	import { toasts } from '$lib/toasts';
 	import { get } from 'svelte/store';
+	import { ArrowLeft, Shield, ChevronDown, Lock } from 'lucide-svelte';
 
 	const sendPrivateTransactionAction = 'transactions:send-private';
 
@@ -71,7 +72,7 @@
 		<header class="bg-[#09090b] border-b border-[#27272a] flex justify-between items-center w-full px-6 h-16 sticky top-0 z-40">
 			<div class="flex items-center gap-4">
 				<a href="/dashboard" class="text-zinc-400 hover:text-zinc-100 hover:bg-[#18181b] transition-colors p-1.5 rounded-lg">
-					<span class="material-symbols-outlined">arrow_back</span>
+					<ArrowLeft size={20} />
 				</a>
 				<h1 class="font-h3 text-h3 text-white">Send Private Transaction</h1>
 			</div>
@@ -84,7 +85,7 @@
 			<div class="max-w-2xl mx-auto">
 				<!-- Privacy Badge -->
 				<div class="bg-[#10b981]/5 border border-[#10b981]/20 rounded-lg p-4 mb-6 flex items-start gap-3">
-					<span class="material-symbols-outlined text-[#10b981]" style="font-variation-settings: 'FILL' 1;">shield</span>
+					<Shield class="text-[#10b981] mt-0.5" size={20} fill="currentColor" />
 					<div>
 						<p class="font-data-point text-data-point text-[#10b981] mb-1">Shielded Protocol Active</p>
 						<p class="font-body-md text-body-md text-zinc-400">This transaction will be private by default. Recipient, amount, and memo are encrypted on-chain.</p>
@@ -102,7 +103,7 @@
 						<input
 							id="recipient"
 							type="text"
-							placeholder="0x... or umbra.eth"
+							placeholder="Enter Solana address here..."
 							class="bg-[#0d0e15] border border-[#27272a] focus:border-zinc-400 focus:ring-0 rounded-lg px-4 py-3 font-body-md text-body-md text-zinc-200 placeholder:text-zinc-600 transition-colors"
 						/>
 					</div>
@@ -123,11 +124,12 @@
 									name="token"
 									class="appearance-none w-full bg-[#0d0e15] border border-[#27272a] focus:border-zinc-400 focus:ring-0 rounded-lg px-4 py-3 font-body-md text-body-md text-zinc-200 cursor-pointer transition-colors"
 								>
+									<option value="sol">SOL</option>
 									<option value="usdc">USDC</option>
 									<option value="usdt">USDT</option>
 									<option value="wsol">wSOL</option>
 								</select>
-								<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none">expand_more</span>
+								<ChevronDown class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" size={16} />
 							</div>
 						</div>
 					</div>
@@ -177,7 +179,7 @@
 							disabled={$pendingRequestActions[sendPrivateTransactionAction]}
 							class="flex-1 bg-[#10b981] text-[#002113] font-bold py-3 rounded-lg text-sm tracking-wide hover:bg-[#4edea3] transition-colors active:scale-[0.99] flex items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-60"
 						>
-							<span class="material-symbols-outlined text-[18px]">lock</span>
+							<Lock size={18} />
 							{$pendingRequestActions[sendPrivateTransactionAction] ? 'Sending...' : 'Send Private Transaction'}
 						</button>
 					</div>

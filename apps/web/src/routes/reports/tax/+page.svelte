@@ -5,6 +5,7 @@
 	import { formatCurrency, formatLabel } from '$lib/display';
 	import { daoSession } from '$lib/session';
 	import { onMount } from 'svelte';
+	import { CheckCircle } from 'lucide-svelte';
 
 	let summary = $state<PublicSummary | null>(null);
 	let isLoadingData = $state(true);
@@ -112,7 +113,7 @@
 								<p class="font-label-mono text-label-mono text-[#10b981] uppercase tracking-widest">Estimated Tax</p>
 								<p class="text-[36px] font-black text-white leading-none mt-1 tracking-tighter">{isLoadingData ? 'Loading...' : formatCurrency(estimatedTax)}</p>
 							</div>
-							<span class="material-symbols-outlined text-[#10b981]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+							<CheckCircle class="text-[#10b981]" size={28} fill="currentColor" />
 						</div>
 					</div>
 				</div>

@@ -6,6 +6,7 @@
 	import { daoSession } from '$lib/session';
 	import { toasts } from '$lib/toasts';
 	import { get } from 'svelte/store';
+	import { FileText, Info, ChevronDown, Send } from 'lucide-svelte';
 
 	const submitDisclosureRequestAction = 'disclosures:request:create';
 
@@ -114,11 +115,11 @@
 		<!-- Context & Identity -->
 		<div class="mb-8 text-center flex flex-col items-center">
 			<div class="h-12 w-12 rounded-full border border-[#27272a] bg-[#18181b] flex items-center justify-center mb-4">
-				<span class="material-symbols-outlined text-[#10b981]" style="font-variation-settings: 'FILL' 1;">description</span>
+				<FileText class="text-[#10b981]" size={22} fill="currentColor" />
 			</div>
 			<h1 class="font-h2 text-h2 text-white mb-2">Request Transaction Disclosure</h1>
 			<p class="font-body-md text-body-md text-[#10b981] bg-[#10b981]/10 px-4 py-2 border border-[#10b981]/20 rounded inline-flex items-center gap-2">
-				<span class="material-symbols-outlined text-[16px]">info</span>
+				<Info size={16} />
 				DAO owner must approve request before access is granted.
 			</p>
 		</div>
@@ -178,7 +179,7 @@
 						<option value="review">Review</option>
 						<option value="other">Other</option>
 					</select>
-					<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-500">expand_more</span>
+					<ChevronDown class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-500" size={16} />
 				</div>
 			</div>
 
@@ -278,7 +279,7 @@
 					class="px-4 py-3 bg-[#10b981] rounded font-data-point text-data-point text-[#002113] hover:bg-[#4edea3] transition-all w-2/3 flex justify-center items-center gap-2 disabled:cursor-not-allowed disabled:opacity-60"
 				>
 					<span>{$pendingRequestActions[submitDisclosureRequestAction] ? 'Submitting...' : 'Submit Request'}</span>
-					<span class="material-symbols-outlined text-[18px]">send</span>
+					<Send size={18} />
 				</button>
 			</div>
 		</form>

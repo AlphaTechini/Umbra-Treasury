@@ -15,9 +15,11 @@ const config = {
 			directives: {
 				'default-src': ['self'],
 				'script-src': ['self', 'unsafe-inline'],
-				'style-src': ['self', 'unsafe-inline'],
+				'style-src': ['self', 'unsafe-inline', 'https:'],
+				'style-src-elem': ['self', 'unsafe-inline', 'https:'],
 				'connect-src': [
 					'self',
+					'http://localhost:3007',
 					'https://api.mainnet-beta.solana.com',
 					'https://api.devnet.solana.com',
 					'wss://api.mainnet-beta.solana.com',
@@ -28,7 +30,7 @@ const config = {
 					'https://relayer.api-devnet.umbraprivacy.com'
 				],
 				'img-src': ['self', 'data:', 'https:'],
-				'font-src': ['self', 'data:'],
+				'font-src': ['self', 'data:', 'https:'],
 				'object-src': ['none'],
 				'base-uri': ['self'],
 				'form-action': ['self'],

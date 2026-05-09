@@ -1,3 +1,7 @@
+<script>
+	import { Wallet, Terminal, Eye, Key, Lock, FileCheck, DollarSign, FileText, Shield } from 'lucide-svelte';
+</script>
+
 <svelte:head>
 	<title>Umbra Treasury - Selective Transparency</title>
 	<meta name="description" content="DAO transactions are private but can be revealed when needed. Built for institutional capital requiring rigorous operational security and verifiable compliance on public ledgers." />
@@ -14,14 +18,6 @@
 			<a class="font-sans text-sm tracking-tight font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 transition-colors duration-150 px-2 py-1 rounded" href="/reports">Analytics</a>
 		</div>
 		<div class="flex items-center gap-4">
-			<div class="hidden sm:flex items-center gap-1">
-				<a href="/connect-wallet" aria-label="Connect wallet" class="text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 transition-colors duration-150 p-1.5 rounded flex items-center justify-center">
-					<span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
-				</a>
-				<a href="/umbra" aria-label="Open Umbra operations" class="text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 transition-colors duration-150 p-1.5 rounded flex items-center justify-center">
-					<span class="material-symbols-outlined text-[20px]">terminal</span>
-				</a>
-			</div>
 			<a href="/connect-wallet" class="font-sans text-sm tracking-tight font-medium text-emerald-500 border border-zinc-800 px-4 py-1.5 rounded hover:bg-zinc-900 transition-colors duration-150">
 				Connect Wallet
 			</a>
@@ -59,7 +55,7 @@
 				<!-- Problem Card -->
 				<div class="lg:col-span-6 bg-[#1a1b22] border border-[#3c4a42] p-6 flex flex-col min-h-[320px]">
 					<div class="flex items-center gap-2 mb-6">
-						<span class="material-symbols-outlined text-[#ffb4ab] text-[20px]">visibility</span>
+						<Eye class="text-[#ffb4ab]" size={20} />
 						<span class="font-label-mono text-label-mono text-[#ffb4ab] uppercase">The Vulnerability</span>
 					</div>
 					<h2 class="font-h2 text-h2 text-[#e3e1ec] mb-4">Public blockchains expose everything.</h2>
@@ -74,7 +70,7 @@
 					<div class="absolute right-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[#10b981]/20 to-transparent"></div>
 					<div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#10b981]/20 to-transparent"></div>
 					<div class="flex items-center gap-2 mb-6 relative z-10">
-						<span class="material-symbols-outlined text-[#10b981] text-[20px]">vpn_key</span>
+						<Key class="text-[#10b981]" size={20} />
 						<span class="font-label-mono text-label-mono text-[#10b981] uppercase">The Protocol</span>
 					</div>
 					<h2 class="font-h2 text-h2 text-[#e3e1ec] mb-4 relative z-10">Private by default, reveal when needed.</h2>
@@ -99,7 +95,7 @@
 				<div class="p-6 border-b md:border-b-0 md:border-r border-[#3c4a42] flex flex-col">
 					<div class="flex items-center justify-between mb-6">
 						<span class="font-label-mono text-label-mono text-[#10b981] bg-[#10b981]/10 px-2 py-1 rounded">01</span>
-						<span class="material-symbols-outlined text-[#bbcabf]">lock</span>
+						<Lock class="text-[#bbcabf]" size={24} />
 					</div>
 					<h3 class="font-h3 text-h3 text-[#e3e1ec] mb-2">Private transactions</h3>
 					<p class="font-body-md text-body-md text-[#bbcabf]">Funds are moved within the shielded protocol. Sender, receiver, and amount remain cryptographically hidden from public network scanners.</p>
@@ -107,7 +103,7 @@
 				<div class="p-6 border-b md:border-b-0 md:border-r border-[#3c4a42] flex flex-col">
 					<div class="flex items-center justify-between mb-6">
 						<span class="font-label-mono text-label-mono text-[#10b981] bg-[#10b981]/10 px-2 py-1 rounded">02</span>
-						<span class="material-symbols-outlined text-[#bbcabf]">assignment_returned</span>
+						<FileCheck class="text-[#bbcabf]" size={24} />
 					</div>
 					<h3 class="font-h3 text-h3 text-[#e3e1ec] mb-2">Request disclosure</h3>
 					<p class="font-body-md text-body-md text-[#bbcabf]">Authorized auditors, DAO governance proposals, or regulatory bodies submit on-chain requests for specific transaction blocks or operational timeframes.</p>
@@ -115,7 +111,7 @@
 				<div class="p-6 flex flex-col">
 					<div class="flex items-center justify-between mb-6">
 						<span class="font-label-mono text-label-mono text-[#10b981] bg-[#10b981]/10 px-2 py-1 rounded">03</span>
-						<span class="material-symbols-outlined text-[#bbcabf]">key</span>
+						<Key class="text-[#bbcabf]" size={24} />
 					</div>
 					<h3 class="font-h3 text-h3 text-[#e3e1ec] mb-2">Reveal with viewing key</h3>
 					<p class="font-body-md text-body-md text-[#bbcabf]">Treasury operators sign a message to generate a zero-knowledge viewing key, selectively decrypting only the requested data vectors.</p>
@@ -132,7 +128,7 @@
 		<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
 			<div class="border border-[#3c4a42] bg-[#12131a] p-4 flex items-start gap-4 hover:border-[#4edea3] transition-colors">
 				<div class="mt-1">
-					<span class="material-symbols-outlined text-[#10b981]" style="font-variation-settings: 'FILL' 1;">payments</span>
+					<DollarSign class="text-[#10b981]" size={20} fill="currentColor" />
 				</div>
 				<div>
 					<h3 class="font-data-point text-data-point text-[#e3e1ec] mb-1">Private payments</h3>
@@ -141,7 +137,7 @@
 			</div>
 			<div class="border border-[#3c4a42] bg-[#12131a] p-4 flex items-start gap-4 hover:border-[#4edea3] transition-colors">
 				<div class="mt-1">
-					<span class="material-symbols-outlined text-[#10b981]" style="font-variation-settings: 'FILL' 1;">summarize</span>
+					<FileText class="text-[#10b981]" size={20} fill="currentColor" />
 				</div>
 				<div>
 					<h3 class="font-data-point text-data-point text-[#e3e1ec] mb-1">Public summaries</h3>
@@ -150,7 +146,7 @@
 			</div>
 			<div class="border border-[#3c4a42] bg-[#12131a] p-4 flex items-start gap-4 hover:border-[#4edea3] transition-colors">
 				<div class="mt-1">
-					<span class="material-symbols-outlined text-[#10b981]" style="font-variation-settings: 'FILL' 1;">policy</span>
+					<Shield class="text-[#10b981]" size={20} fill="currentColor" />
 				</div>
 				<div>
 					<h3 class="font-data-point text-data-point text-[#e3e1ec] mb-1">Auditor reports</h3>

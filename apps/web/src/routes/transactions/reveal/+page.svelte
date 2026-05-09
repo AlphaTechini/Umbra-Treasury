@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Sidebar from '$lib/components/Sidebar.svelte';
+	import { ArrowLeft, Key, AlertTriangle, LockOpen, Eye, BadgeCheck, ShieldCheck, Copy } from 'lucide-svelte';
 	let isSuccess = $state(false);
 </script>
 
@@ -14,7 +15,7 @@
 		<header class="bg-[#09090b] border-b border-[#27272a] flex justify-between items-center w-full px-6 h-16 sticky top-0 z-40">
 			<div class="flex items-center gap-4">
 				<a href="/dashboard" class="text-zinc-400 hover:text-zinc-100 hover:bg-[#18181b] transition-colors p-1.5 rounded-lg">
-					<span class="material-symbols-outlined">arrow_back</span>
+					<ArrowLeft size={20} />
 				</a>
 				<h1 class="font-h3 text-h3 text-white">Reveal Transaction</h1>
 			</div>
@@ -35,7 +36,7 @@
 						<div class="p-6 border-b border-[#27272a] bg-[#1e1f26]/50 flex justify-between items-center">
 							<div class="flex items-center gap-3">
 								<div class="w-10 h-10 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center">
-									<span class="material-symbols-outlined text-zinc-400">key</span>
+									<Key class="text-zinc-400" size={20} />
 								</div>
 								<div>
 									<h2 class="font-h3 text-h3 text-white leading-none">Decrypt Payload</h2>
@@ -60,7 +61,7 @@
 							</div>
 
 							<div class="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3 flex gap-3">
-								<span class="material-symbols-outlined text-yellow-500 text-sm mt-0.5" style="font-variation-settings: 'FILL' 1;">warning</span>
+								<AlertTriangle class="text-yellow-500 mt-0.5 shrink-0" size={16} fill="currentColor" />
 								<p class="text-xs text-yellow-500/90 leading-tight">
 									Decrypted data will only be visible locally in your browser. It is never re-broadcast to the network.
 								</p>
@@ -74,7 +75,7 @@
 									onclick={() => isSuccess = true}
 									class="flex-1 bg-white text-black font-bold py-3 rounded-lg text-xs uppercase tracking-widest hover:bg-zinc-200 transition-colors active:scale-[0.99] flex items-center justify-center gap-2"
 								>
-									<span class="material-symbols-outlined text-[16px]">lock_open</span>
+									<LockOpen size={16} />
 									Decrypt Transaction
 								</button>
 							</div>
@@ -86,7 +87,7 @@
 						<div class="p-6 border-b border-[#27272a] bg-[#1e1f26]/50 flex justify-between items-center">
 							<div class="flex items-center gap-3">
 								<div class="w-10 h-10 rounded-lg bg-[#10b981]/10 border border-[#10b981]/20 flex items-center justify-center">
-									<span class="material-symbols-outlined text-[#10b981] font-bold" style="font-variation-settings: 'FILL' 1;">visibility</span>
+									<Eye class="text-[#10b981]" size={20} fill="currentColor" />
 								</div>
 								<div>
 									<h2 class="font-h3 text-h3 text-white leading-none">Transaction Revealed</h2>
@@ -106,7 +107,7 @@
 									<span class="text-zinc-500 text-xs font-medium">Recipient Address</span>
 									<div class="flex items-center gap-2">
 										<span class="font-mono text-xs text-white">No data yet</span>
-										<button class="material-symbols-outlined text-[16px] text-zinc-500 hover:text-white">content_copy</button>
+										<button><Copy class="text-zinc-500 hover:text-white" size={16} /></button>
 									</div>
 								</div>
 								<div class="bg-[#0d0e15] p-4 flex justify-between items-center">
@@ -123,7 +124,7 @@
 								<div class="bg-[#0d0e15] p-4 flex justify-between items-center">
 									<span class="text-zinc-500 text-xs font-medium">Privacy Status</span>
 									<div class="flex items-center gap-1.5 text-[#10b981]">
-										<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+										<BadgeCheck size={16} fill="currentColor" />
 										<span class="text-xs font-bold">No data yet</span>
 									</div>
 								</div>
@@ -139,7 +140,7 @@
 
 						<div class="px-8 py-4 bg-[#0d0e15] border-t border-[#27272a] flex items-center justify-center gap-6">
 							<div class="flex items-center gap-2">
-								<span class="material-symbols-outlined text-[14px] text-zinc-600">security</span>
+								<ShieldCheck class="text-zinc-600" size={14} />
 								<span class="text-[10px] text-zinc-600 font-mono">ENCRYPTION: AES-256-GCM</span>
 							</div>
 						</div>

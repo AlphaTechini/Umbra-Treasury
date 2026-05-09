@@ -5,6 +5,7 @@
 	import { formatCurrency, formatLabel } from '$lib/display';
 	import { daoSession } from '$lib/session';
 	import { onMount } from 'svelte';
+	import { TrendingUp, TrendingDown, Landmark, Lock, Shield, ArrowRight, LayoutGrid } from 'lucide-svelte';
 
 	let summary = $state<PublicSummary | null>(null);
 	let isLoadingData = $state(true);
@@ -62,7 +63,7 @@
 				<div class="bg-[#18181b] border border-[#27272a] p-6 rounded-lg flex flex-col justify-between">
 					<div class="flex justify-between items-start mb-6">
 						<h3 class="font-label-mono text-label-mono text-zinc-400 uppercase">Total Income</h3>
-						<span class="material-symbols-outlined text-[#10b981]">arrow_upward</span>
+						<TrendingUp class="text-[#10b981]" size={20} />
 					</div>
 					<div class="font-h2 text-h2 text-white">{isLoadingData ? 'Loading...' : formatCurrency(summary?.totals.income)}</div>
 					<div class="mt-2 text-[#10b981] font-data-point text-data-point">{summary?.dao.baseToken?.toUpperCase() ?? 'No data yet'}</div>
@@ -70,7 +71,7 @@
 				<div class="bg-[#18181b] border border-[#27272a] p-6 rounded-lg flex flex-col justify-between">
 					<div class="flex justify-between items-start mb-6">
 						<h3 class="font-label-mono text-label-mono text-zinc-400 uppercase">Total Expenses</h3>
-						<span class="material-symbols-outlined text-red-400">arrow_downward</span>
+						<TrendingDown class="text-red-400" size={20} />
 					</div>
 					<div class="font-h2 text-h2 text-white">{isLoadingData ? 'Loading...' : formatCurrency(summary?.totals.expenses)}</div>
 					<div class="mt-2 text-zinc-500 font-data-point text-data-point">{formatLabel(summary?.privacy.source)}</div>
@@ -79,7 +80,7 @@
 					<div class="absolute inset-0 bg-gradient-to-br from-[#10b981]/5 to-transparent pointer-events-none"></div>
 					<div class="flex justify-between items-start mb-6 relative z-10">
 						<h3 class="font-label-mono text-label-mono text-[#10b981] uppercase">Net Treasury</h3>
-						<span class="material-symbols-outlined text-[#10b981]">account_balance</span>
+						<Landmark class="text-[#10b981]" size={20} />
 					</div>
 					<div class="font-h2 text-h2 text-[#10b981] relative z-10">{isLoadingData ? 'Loading...' : formatCurrency(summary?.totals.net)}</div>
 					<div class="mt-2 text-zinc-400 font-data-point text-data-point relative z-10">{formatLabel(summary?.privacy.verificationStatus)}</div>
@@ -89,14 +90,14 @@
 			<section class="grid grid-cols-1 lg:grid-cols-2 gap-12">
 				<div class="bg-[#18181b] border border-[#27272a] rounded-lg p-6 flex flex-col justify-center items-center text-center min-h-[240px]">
 					<div class="w-16 h-16 rounded-full bg-[#27272a] flex items-center justify-center mb-4 border border-[#3c4a42]">
-						<span class="material-symbols-outlined text-white text-3xl">lock</span>
+						<Lock class="text-white" size={28} />
 					</div>
 					<h2 class="font-h3 text-h3 text-white mb-2">{summary?.totals.transactionCount ?? 0} Private Transactions</h2>
 					<p class="font-body-md text-body-md text-zinc-400">Public-safe summary</p>
 				</div>
 				<div class="flex flex-col justify-center border-l border-[#27272a] pl-12">
 					<div class="flex items-center gap-2 mb-4">
-						<span class="material-symbols-outlined text-[#10b981]" style="font-variation-settings: 'FILL' 1;">shield</span>
+						<Shield class="text-[#10b981]" size={20} fill="currentColor" />
 						<span class="font-label-mono text-label-mono text-[#10b981] uppercase tracking-widest">Privacy Preserved</span>
 					</div>
 					<p class="font-body-lg text-body-lg text-white mb-6">
@@ -104,14 +105,14 @@
 					</p>
 					<a href="/disclosures/request" class="inline-flex items-center gap-2 bg-transparent border border-[#27272a] text-white font-data-point text-data-point py-2 px-6 rounded hover:bg-[#18181b] transition-colors">
 						Request Disclosure
-						<span class="material-symbols-outlined text-sm">arrow_forward</span>
+						<ArrowRight size={16} />
 					</a>
 				</div>
 			</section>
 
 			<section>
 				<div class="flex items-center gap-2 mb-4 pb-2 border-b border-[#27272a]">
-					<span class="material-symbols-outlined text-zinc-400 text-sm">category</span>
+					<LayoutGrid class="text-zinc-400" size={16} />
 					<h3 class="font-label-mono text-label-mono text-zinc-400 uppercase">Category Breakdown</h3>
 				</div>
 				{#if isLoadingData}

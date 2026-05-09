@@ -6,9 +6,10 @@
 	import AccessLogPanel from '$lib/components/AccessLogPanel.svelte';
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { formatCurrency, formatDate, formatLabel, shortId } from '$lib/display';
-	import { daoSession } from '$lib/session';
+	import { daoSession, walletSession } from '$lib/session';
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
+	import { Plus, Landmark, Lock, Eye, ShieldCheck, LogOut } from 'lucide-svelte';
 
 	let summary = $state<PublicSummary | null>(null);
 	let transactions = $state<TreasuryTransaction[]>([]);
@@ -17,6 +18,8 @@
 	let isLoadingData = $state(true);
 	let emptyMessage = $state('Loading treasury data...');
 	let transactionFilter = $state<'all' | 'pending' | 'revealed'>('all');
+
+	const wallet = $derived($walletSession);
 
 	onMount(async () => {
 		const dao = get(daoSession).dao ?? (await daoSession.loadDemoDao());
@@ -71,6 +74,15 @@
 	function getTransactionStatusColor(transaction: TreasuryTransaction) {
 		return transaction.privacyStatus === 'disclosure_available' ? 'bg-[#10b981]' : 'bg-zinc-600';
 	}
+
+	function handleDisconnect() {
+		walletSession.disconnect();
+		window.location.href = '/';
+	}
+
+	function shortAddress(address: string) {
+		return `${address.slice(0, 6)}...${address.slice(-4)}`;
+	}
 </script>
 
 <svelte:head>
@@ -85,9 +97,22 @@
 		<header class="bg-[#09090b] border-b border-[#27272a] flex justify-between items-center w-full px-6 h-16 sticky top-0 z-40">
 			<div class="flex items-center flex-1"></div>
 			<div class="flex items-center gap-3">
-				<a href="/connect-wallet" class="bg-[#10b981] text-[#002113] font-bold px-4 py-1.5 rounded text-xs hover:bg-[#4edea3] transition-colors active:scale-[0.98]">
-					Connect Wallet
-				</a>
+				{#if wallet.status === 'connected' && wallet.walletAddress}
+					<div class="flex items-center gap-2 bg-[#18181b] border border-[#27272a] px-4 py-1.5 rounded">
+						<span class="text-[#10b981] text-xs font-mono">{shortAddress(wallet.walletAddress)}</span>
+						<button
+							onclick={handleDisconnect}
+							class="text-zinc-500 hover:text-red-400 transition-colors"
+							title="Disconnect wallet"
+						>
+							<LogOut size={14} />
+						</button>
+					</div>
+				{:else}
+					<a href="/connect-wallet" class="bg-[#10b981] text-[#002113] font-bold px-4 py-1.5 rounded text-xs hover:bg-[#4edea3] transition-colors active:scale-[0.98]">
+						Connect Wallet
+					</a>
+				{/if}
 			</div>
 		</header>
 
@@ -99,7 +124,7 @@
 				</div>
 				<div class="flex gap-2">
 					<a href="/transactions/add" class="flex items-center gap-2 bg-white text-black font-bold text-xs px-4 py-2 rounded hover:bg-zinc-200 transition-colors active:scale-[0.98]">
-						<span class="material-symbols-outlined text-[16px]">add</span>
+						<Plus size={16} />
 						New Transaction
 					</a>
 				</div>
@@ -109,7 +134,7 @@
 				<div class="bg-[#18181b] border border-[#27272a] rounded-lg p-5 flex flex-col gap-3">
 					<div class="flex items-center justify-between">
 						<span class="font-label-mono text-label-mono text-zinc-400 uppercase">Net Treasury</span>
-						<span class="material-symbols-outlined text-[#10b981] text-xl">account_balance</span>
+						<Landmark class="text-[#10b981]" size={20} />
 					</div>
 					<div class="font-h2 text-h2 text-white">{isLoadingData ? 'Loading...' : formatCurrency(summary?.totals.net)}</div>
 					<div class="font-data-point text-data-point text-[#10b981]">{summary?.dao.baseToken?.toUpperCase() ?? 'No data yet'}</div>
@@ -117,7 +142,7 @@
 				<div class="bg-[#18181b] border border-[#27272a] rounded-lg p-5 flex flex-col gap-3">
 					<div class="flex items-center justify-between">
 						<span class="font-label-mono text-label-mono text-zinc-400 uppercase">Private Txns</span>
-						<span class="material-symbols-outlined text-[#10b981] text-xl">lock</span>
+						<Lock class="text-[#10b981]" size={20} />
 					</div>
 					<div class="font-h2 text-h2 text-white">{isLoadingData ? '...' : (summary?.totals.transactionCount ?? 0)}</div>
 					<div class="font-data-point text-data-point text-zinc-400">Recorded transactions</div>
@@ -125,7 +150,7 @@
 				<div class="bg-[#18181b] border border-[#27272a] rounded-lg p-5 flex flex-col gap-3">
 					<div class="flex items-center justify-between">
 						<span class="font-label-mono text-label-mono text-zinc-400 uppercase">Pending Reveals</span>
-						<span class="material-symbols-outlined text-[#10b981] text-xl">visibility</span>
+						<Eye class="text-[#10b981]" size={20} />
 					</div>
 					<div class="font-h2 text-h2 text-white">{isLoadingData ? '...' : pendingDisclosureCount}</div>
 					<div class="font-data-point text-data-point text-zinc-400">Awaiting approval</div>
@@ -133,7 +158,7 @@
 				<div class="bg-[#18181b] border border-[#27272a] rounded-lg p-5 flex flex-col gap-3">
 					<div class="flex items-center justify-between">
 						<span class="font-label-mono text-label-mono text-zinc-400 uppercase">Report Source</span>
-						<span class="material-symbols-outlined text-[#10b981] text-xl">verified_user</span>
+						<ShieldCheck class="text-[#10b981]" size={20} />
 					</div>
 					<div class="font-h3 text-h3 text-white">{formatLabel(summary?.privacy.source)}</div>
 					<div class="font-data-point text-data-point text-[#10b981]">{formatLabel(summary?.privacy.verificationStatus)}</div>

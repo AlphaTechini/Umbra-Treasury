@@ -1,39 +1,46 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { pendingRequestActions, runRequestAction } from '$lib/loading';
-	import { connectWalletAndLoadDao } from '$lib/session';
+	import { walletSession } from '$lib/session';
 	import { toasts } from '$lib/toasts';
-	import { watchCompatibleWallets, type CompatibleWallet } from '$lib/umbra';
+	import { detectInstalledWallets, connectDirectWallet, getWalletInstallUrl, type SolanaWallet } from '$lib/umbra/directWalletDetection';
 	import { onMount } from 'svelte';
+	import { Wallet, Shield, ArrowLeft, ChevronRight, ExternalLink, Ghost, Flame, Backpack, Sparkles, CircleDollarSign } from 'lucide-svelte';
 
-	let wallets = $state<CompatibleWallet[]>([]);
-	let isDiscoveringWallets = $state(true);
+	let wallets = $state<SolanaWallet[]>([]);
 
 	function getWalletConnectAction(walletName: string) {
 		return `wallet:connect:${walletName}`;
 	}
 
-	async function handleWalletConnect(walletName: string) {
-		await runRequestAction(getWalletConnectAction(walletName), async () => {
-			toasts.add(`Connecting ${walletName}...`, 'info');
-			const result = await connectWalletAndLoadDao(walletName);
-			const registrationCount = result.umbraRegistrationSignatures.length;
+	async function handleWalletConnect(wallet: SolanaWallet) {
+		if (!wallet.isInstalled) {
+			window.open(getWalletInstallUrl(wallet.name), '_blank');
+			return;
+		}
 
-			toasts.add(
-				`Connected ${result.walletName}, registered Umbra user${registrationCount ? ` (${registrationCount} tx)` : ''}, and loaded ${result.daoSlug}.`,
-				'success'
-			);
-			await goto('/dashboard');
+		await runRequestAction(getWalletConnectAction(wallet.name), async () => {
+			toasts.add(`Connecting ${wallet.name}...`, 'info');
+			try {
+				const walletAddress = await connectDirectWallet(wallet.name);
+				
+				// Persist wallet session
+				walletSession.connect(walletAddress, wallet.name);
+				
+				toasts.add(`Connected! Address: ${walletAddress.slice(0, 8)}...`, 'success');
+				await goto('/dashboard');
+			} catch (error: any) {
+				toasts.add(error.message || `Failed to connect ${wallet.name}`, 'error');
+			}
 		});
 	}
 
-	onMount(() => {
-		const stopWatchingWallets = watchCompatibleWallets((nextWallets) => {
-			wallets = nextWallets;
-			isDiscoveringWallets = false;
-		});
+	function getInstallUrl(walletName: string): string {
+		return getWalletInstallUrl(walletName);
+	}
 
-		return stopWatchingWallets;
+	onMount(() => {
+		wallets = detectInstalledWallets();
 	});
 </script>
 
@@ -47,7 +54,7 @@
 		<!-- Logo / Identity -->
 		<div class="text-center mb-12">
 			<div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#10b981]/10 border border-[#10b981]/20 mb-8 shadow-[0_0_30px_rgba(16,185,129,0.1)]">
-				<span class="material-symbols-outlined text-[#10b981] text-4xl" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+				<Wallet class="text-[#10b981]" size={40} />
 			</div>
 			<h1 class="font-h2 text-h2 text-white mb-3 tracking-tight">Connect Wallet</h1>
 			<p class="font-body-md text-body-md text-zinc-400 max-w-[320px] mx-auto">Access your private treasury with a secure Web3 wallet connection.</p>
@@ -55,43 +62,59 @@
 
 		<!-- Wallet Options -->
 		<div class="space-y-4 mb-10">
-			{#if isDiscoveringWallets}
-				<div class="w-full bg-[#18181b] border border-[#27272a] rounded-xl p-5 text-center text-sm text-zinc-400">
-					Searching for compatible Solana wallets...
+			{#each wallets as wallet}
+			{@const walletAction = getWalletConnectAction(wallet.name)}
+			<button
+				onclick={() => handleWalletConnect(wallet)}
+				disabled={$pendingRequestActions[walletAction]}
+				class="w-full bg-[#18181b] border border-[#27272a] hover:border-[#10b981] hover:bg-[#1e1f26] transition-all duration-300 rounded-xl p-5 flex items-center gap-5 group active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+			>
+				<div class="w-12 h-12 rounded-lg bg-[#27272a] group-hover:bg-[#10b981]/10 flex items-center justify-center flex-shrink-0 transition-colors">
+					{#if wallet.icon === 'Ghost'}
+						<Ghost class="text-[#10b981]" size={28} />
+					{:else if wallet.icon === 'Flame'}
+						<Flame class="text-[#10b981]" size={28} />
+					{:else if wallet.icon === 'Backpack'}
+						<Backpack class="text-[#10b981]" size={28} />
+					{:else if wallet.icon === 'Sparkles'}
+						<Sparkles class="text-[#10b981]" size={28} />
+					{:else if wallet.icon === 'CircleDollarSign'}
+						<CircleDollarSign class="text-[#10b981]" size={28} />
+					{/if}
 				</div>
-			{:else if wallets.length === 0}
-				<div class="w-full bg-[#18181b] border border-[#27272a] rounded-xl p-5 text-center">
-					<div class="font-data-point text-data-point text-white text-base">No compatible wallet found</div>
-					<p class="font-body-md text-body-md text-zinc-500 mt-2">Install a Wallet Standard Solana wallet, then reopen this page.</p>
+				<div class="text-left flex-1">
+					<div class="font-data-point text-data-point text-white text-base flex items-center gap-2">
+						{wallet.name}
+						{#if wallet.isInstalled}
+							<span class="text-[10px] bg-[#10b981]/20 text-[#10b981] px-2 py-0.5 rounded-full font-mono">INSTALLED</span>
+						{:else}
+							<span class="text-[10px] bg-zinc-700 text-zinc-400 px-2 py-0.5 rounded-full font-mono">NOT INSTALLED</span>
+						{/if}
+					</div>
+					<div class="font-body-md text-body-md text-zinc-500 group-hover:text-zinc-400 mt-1 transition-colors">
+						{#if $pendingRequestActions[walletAction]}
+							Connecting...
+						{:else if wallet.isInstalled}
+							Click to connect
+						{:else}
+							Click to install
+						{/if}
+					</div>
 				</div>
-			{:else}
-				{#each wallets as wallet}
-				{@const walletAction = getWalletConnectAction(wallet.name)}
-				<button
-					onclick={() => handleWalletConnect(wallet.name)}
-					disabled={$pendingRequestActions[walletAction]}
-					class="w-full bg-[#18181b] border border-[#27272a] hover:border-[#10b981] hover:bg-[#1e1f26] transition-all duration-300 rounded-xl p-5 flex items-center gap-5 group active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
-				>
-					<div class="w-12 h-12 rounded-lg bg-[#27272a] group-hover:bg-[#10b981]/10 flex items-center justify-center flex-shrink-0 transition-colors">
-						<img src={wallet.icon} alt="" class="h-7 w-7 rounded-sm" />
-					</div>
-					<div class="text-left flex-1">
-						<div class="font-data-point text-data-point text-white text-base">{wallet.name}</div>
-						<div class="font-body-md text-body-md text-zinc-500 group-hover:text-zinc-400 mt-1 transition-colors">
-							{$pendingRequestActions[walletAction] ? 'Connecting...' : 'Wallet Standard Solana adapter'}
-						</div>
-					</div>
-					<span class="material-symbols-outlined text-zinc-700 group-hover:text-[#10b981] transition-all translate-x-0 group-hover:translate-x-1">chevron_right</span>
-				</button>
-				{/each}
-			{/if}
+			{#if wallet.isInstalled}
+					<ChevronRight class="text-zinc-700 group-hover:text-[#10b981] transition-all translate-x-0 group-hover:translate-x-1" size={20} />
+				{:else}
+					<ExternalLink class="text-zinc-700 group-hover:text-zinc-500" size={18} />
+				{/if}
+			</button>
+			{/each}
 		</div>
 
 		<!-- Privacy Notice -->
 		<div class="bg-[#10b981]/5 border border-[#10b981]/20 rounded-xl p-5 mb-8">
 			<div class="flex items-start gap-4">
 				<div class="mt-1">
-					<span class="material-symbols-outlined text-[#10b981] text-xl" style="font-variation-settings: 'FILL' 1;">shield</span>
+					<Shield class="text-[#10b981]" size={20} fill="currentColor" />
 				</div>
 				<div>
 					<p class="font-data-point text-data-point text-[#10b981] mb-1 uppercase tracking-wider text-xs">Privacy Protocol Active</p>
@@ -103,7 +126,7 @@
 		<!-- Footer Actions -->
 		<div class="flex items-center px-2">
 			<a href="/" class="font-body-md text-body-md text-zinc-500 hover:text-white transition-colors flex items-center gap-2 group">
-				<span class="material-symbols-outlined text-lg transition-transform group-hover:-translate-x-1">arrow_back</span>
+				<ArrowLeft class="transition-transform group-hover:-translate-x-1" size={18} />
 				Back to home
 			</a>
 		</div>

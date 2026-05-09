@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { LayoutDashboard, Receipt, Lock, Eye, FileText } from 'lucide-svelte';
 
 	const navItems = [
-		{ href: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
-		{ href: '/transactions', icon: 'receipt_long', label: 'Transactions' },
-		{ href: '/umbra', icon: 'encrypted', label: 'Umbra Flows' },
-		{ href: '/disclosures', icon: 'visibility', label: 'Disclosure Requests' },
-		{ href: '/reports', icon: 'assessment', label: 'Reports' },
+		{ href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+		{ href: '/transactions', icon: Receipt, label: 'Transactions' },
+		{ href: '/umbra', icon: Lock, label: 'Umbra Flows' },
+		{ href: '/disclosures', icon: Eye, label: 'Disclosure Requests' },
+		{ href: '/reports', icon: FileText, label: 'Reports' },
 	];
 </script>
 
@@ -25,9 +26,7 @@
 					? 'text-emerald-400 bg-[#18181b] border-r-2 border-emerald-500'
 					: 'text-zinc-400 hover:bg-[#18181b] hover:text-zinc-50'}"
 			>
-				<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {isActive ? '1' : '0'};">
-					{item.icon}
-				</span>
+				<svelte:component this={item.icon} size={20} fill={isActive ? 'currentColor' : 'none'} />
 				<span class="font-body-md text-body-md tracking-tight">{item.label}</span>
 			</a>
 		{/each}

@@ -1,4 +1,8 @@
 import { z } from "zod";
+import { config } from "dotenv";
+
+// Load .env file before parsing
+config();
 
 const envSchema = z
   .object({
