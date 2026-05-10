@@ -4,6 +4,7 @@
 	import { walletSession } from '$lib/session';
 	import { toasts } from '$lib/toasts';
 	import { detectInstalledWallets, connectDirectWallet, getWalletInstallUrl, type SolanaWallet } from '$lib/umbra/directWalletDetection';
+	import { createUser } from '$lib/api/users';
 	import { onMount } from 'svelte';
 	import { Wallet, Shield, ArrowLeft, ChevronRight, ExternalLink, Ghost, Flame, Backpack, Sparkles, CircleDollarSign } from 'lucide-svelte';
 
@@ -23,6 +24,12 @@
 			toasts.add(`Connecting ${wallet.name}...`, 'info');
 			try {
 				const walletAddress = await connectDirectWallet(wallet.name);
+				
+				// Create user in database
+				await createUser({ 
+					walletAddress, 
+					username: wallet.name 
+				});
 				
 				// Persist wallet session
 				walletSession.connect(walletAddress, wallet.name);
