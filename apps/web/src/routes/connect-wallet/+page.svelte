@@ -53,13 +53,13 @@
 		// Fire and forget - don't await
 		loadOrCreateDao(walletAddress)
 			.then((dao) => {
+				console.log('[DAO] Successfully loaded/created DAO:', dao.id, dao.name);
 				daoSession.setActiveDao(dao);
 				toasts.add('Treasury workspace ready', 'success');
 			})
 			.catch((error) => {
-				console.error('Failed to load/create DAO:', error);
-				// Don't show error toast - user is already on dashboard
-				// They can manually create a DAO if needed
+				console.error('[DAO] Failed to load/create DAO:', error);
+				toasts.add('Could not load treasury workspace. You can create one manually.', 'error');
 			});
 	}
 

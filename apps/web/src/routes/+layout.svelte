@@ -4,10 +4,32 @@
 	import { fade } from 'svelte/transition';
 	import { navigating } from '$app/stores';
 	import ToastContainer from '$lib/components/ToastContainer.svelte';
+	import { daoSession, walletSession } from '$lib/session';
+	import { getOwnerDaoByWalletAddress } from '$lib/api/daos';
+	import { onMount } from 'svelte';
+	import { get } from 'svelte/store';
 
 	let { children } = $props();
 
 	let showLoading = $derived($isLoading || !!$navigating);
+
+	// Auto-load DAO when wallet is connected
+	onMount(async () => {
+		const wallet = get(walletSession);
+		const currentDao = get(daoSession).dao;
+
+		// If wallet is connected but no DAO in session, try to load it
+		if (wallet.status === 'connected' && wallet.walletAddress && !currentDao) {
+			try {
+				console.log('[Layout] Wallet connected, loading DAO for:', wallet.walletAddress);
+				const { dao } = await getOwnerDaoByWalletAddress(wallet.walletAddress);
+				daoSession.setActiveDao(dao);
+				console.log('[Layout] DAO loaded:', dao.id, dao.name);
+			} catch (error) {
+				console.log('[Layout] No DAO found for wallet, user needs to create one');
+			}
+		}
+	});
 </script>
 
 <svelte:head>

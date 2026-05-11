@@ -22,7 +22,7 @@
 	const wallet = $derived($walletSession);
 
 	onMount(async () => {
-		const dao = get(daoSession).dao ?? (await daoSession.loadDemoDao());
+		const dao = get(daoSession).dao;
 
 		if (!dao) {
 			emptyMessage = 'No data yet. Connect a wallet or create a DAO treasury to begin.';
@@ -41,9 +41,10 @@
 			summary = summaryResponse.summary;
 			transactions = transactionResponse.transactions;
 			disclosureRequests = disclosureResponse.disclosureRequests;
-			emptyMessage = 'No data yet.';
+			emptyMessage = 'No transactions yet. Create your first private transaction to get started.';
 		} catch (error) {
-			emptyMessage = error instanceof Error ? error.message : 'No data yet.';
+			console.error('[Dashboard] Failed to load data:', error);
+			emptyMessage = error instanceof Error ? error.message : 'Failed to load treasury data.';
 		} finally {
 			isLoadingData = false;
 		}
@@ -136,8 +137,20 @@
 						<span class="font-label-mono text-label-mono text-zinc-400 uppercase">Net Treasury</span>
 						<Landmark class="text-[#10b981]" size={20} />
 					</div>
-					<div class="font-h2 text-h2 text-white">{isLoadingData ? 'Loading...' : formatCurrency(summary?.totals.net)}</div>
-					<div class="font-data-point text-data-point text-[#10b981]">{summary?.dao.baseToken?.toUpperCase() ?? 'No data yet'}</div>
+					<div class="font-h2 text-h2 text-white">
+						{#if isLoadingData}
+							Loading...
+						{:else}
+							{(summary?.totals.net ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 6 })}
+						{/if}
+					</div>
+					<div class="font-data-point text-data-point text-[#10b981]">
+						{#if transactions.length > 0}
+							{transactions[0].token.toUpperCase()}
+						{:else}
+							{summary?.dao.baseToken?.toUpperCase() ?? 'SOL'}
+						{/if}
+					</div>
 				</div>
 				<div class="bg-[#18181b] border border-[#27272a] rounded-lg p-5 flex flex-col gap-3">
 					<div class="flex items-center justify-between">
@@ -246,7 +259,7 @@
 												<span class="text-xs text-zinc-300">{getTransactionStatus(tx)}</span>
 											</div>
 										</td>
-										<td class="px-6 py-4 font-data-point text-data-point text-white">{formatCurrency(tx.amountHint)}</td>
+										<td class="px-6 py-4 font-data-point text-data-point text-white">{formatCurrency(tx.amountHint, tx.token)}</td>
 										<td class="px-6 py-4 font-mono text-xs text-zinc-300">{tx.publicCounterpartyLabel ?? 'No data yet'}</td>
 										<td class="px-6 py-4">
 											<span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-[#10b981]/10 border border-[#10b981]/20 text-[#10b981]">{formatLabel(tx.category)}</span>

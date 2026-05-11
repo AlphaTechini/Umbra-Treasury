@@ -32,10 +32,6 @@
 	const queryAction = 'umbra:query';
 	const withdrawAction = 'umbra:withdraw';
 
-	const depositAction = 'umbra:deposit';
-	const queryAction = 'umbra:query';
-	const withdrawAction = 'umbra:withdraw';
-
 	async function handleDeposit(event: SubmitEvent) {
 		event.preventDefault();
 		await runRequestAction(depositAction, async () => {

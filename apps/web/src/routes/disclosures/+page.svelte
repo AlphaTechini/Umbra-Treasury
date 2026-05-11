@@ -2,6 +2,8 @@
 	import { getDaoDisclosureRequests, reviewDisclosureRequest } from '$lib/api/disclosures';
 	import { generateMockDisclosureReport } from '$lib/api/reports';
 	import type { DisclosureRequest } from '$lib/api/types';
+	import { createDao, getOwnerDaoByWalletAddress } from '$lib/api/daos';
+	import { ApiClientError } from '$lib/api/http';
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { formatDate, formatLabel, shortId } from '$lib/display';
 	import { pendingRequestActions, runRequestAction } from '$lib/loading';
@@ -14,6 +16,9 @@
 	let isLoadingData = $state(true);
 	let emptyMessage = $state('Loading disclosure requests...');
 	let requestFilter = $state<'pending' | 'resolved' | 'rejected'>('pending');
+	
+	const wallet = $derived($walletSession);
+	
 	const visibleDisclosureRequests = $derived(
 		disclosureRequests.filter((request) => {
 			if (requestFilter === 'resolved') {
@@ -25,7 +30,40 @@
 	);
 
 	onMount(async () => {
-		const dao = get(daoSession).dao ?? (await daoSession.loadDemoDao());
+		let dao = get(daoSession).dao;
+
+		// If no DAO in session but wallet is connected, try to load/create one
+		if (!dao && wallet.status === 'connected' && wallet.walletAddress) {
+			try {
+				const { dao: existingDao } = await getOwnerDaoByWalletAddress(wallet.walletAddress);
+				dao = existingDao;
+				daoSession.setActiveDao(dao);
+			} catch (error) {
+				if (error instanceof ApiClientError && error.status === 404) {
+					// DAO doesn't exist, create it
+					try {
+						const { dao: newDao } = await createDao({
+							ownerWalletAddress: wallet.walletAddress,
+							name: `Umbra Treasury ${shortAddress(wallet.walletAddress)}`,
+							slug: createDefaultDaoSlug(wallet.walletAddress),
+							treasuryAddress: wallet.walletAddress,
+							baseToken: 'usdc',
+							description: 'Default private treasury workspace created from wallet connection.',
+							isPublic: true
+						});
+						dao = newDao;
+						daoSession.setActiveDao(dao);
+					} catch (createError) {
+						console.error('Failed to create DAO:', createError);
+					}
+				}
+			}
+		}
+
+		// Fallback to demo DAO if still no DAO
+		if (!dao) {
+			dao = await daoSession.loadDemoDao();
+		}
 
 		if (!dao) {
 			emptyMessage = 'No data yet. Connect a wallet or create a DAO treasury to begin.';
@@ -117,6 +155,23 @@
 			toasts.add('Mock disclosure report generated.', 'success');
 		});
 	}
+
+	function shortAddress(address: string) {
+		return `${address.slice(0, 6)}...${address.slice(-4)}`;
+	}
+
+	function createDefaultDaoSlug(walletAddress: string) {
+		const slugSafeAddress = walletAddress.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+		return `dao-${slugSafeAddress.slice(0, 20)}-${stableAddressHash(walletAddress)}`;
+	}
+
+	function stableAddressHash(walletAddress: string) {
+		let hash = 5381;
+		for (let index = 0; index < walletAddress.length; index += 1) {
+			hash = (hash * 33) ^ walletAddress.charCodeAt(index);
+		}
+		return (hash >>> 0).toString(36);
+	}
 </script>
 
 <svelte:head>
@@ -131,9 +186,15 @@
 		<header class="bg-[#09090b] border-b border-[#27272a] flex justify-between items-center w-full px-6 h-16 sticky top-0 z-40">
 			<div class="flex items-center flex-1"></div>
 			<div class="flex items-center gap-3">
-				<a href="/connect-wallet" class="bg-[#10b981] text-[#002113] font-bold px-4 py-1.5 rounded text-xs hover:bg-[#4edea3] transition-colors active:scale-[0.98]">
-					Connect Wallet
-				</a>
+				{#if wallet.status === 'connected' && wallet.walletAddress}
+					<div class="flex items-center gap-2 bg-[#18181b] border border-[#27272a] px-4 py-1.5 rounded">
+						<span class="text-[#10b981] text-xs font-mono">{shortAddress(wallet.walletAddress)}</span>
+					</div>
+				{:else}
+					<a href="/connect-wallet" class="bg-[#10b981] text-[#002113] font-bold px-4 py-1.5 rounded text-xs hover:bg-[#4edea3] transition-colors active:scale-[0.98]">
+						Connect Wallet
+					</a>
+				{/if}
 			</div>
 		</header>
 

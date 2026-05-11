@@ -6,11 +6,11 @@
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { formatCurrency, formatDate, formatLabel, shortId } from '$lib/display';
 	import { pendingRequestActions, runRequestAction } from '$lib/loading';
-	import { daoSession } from '$lib/session';
+	import { daoSession, walletSession } from '$lib/session';
 	import { toasts } from '$lib/toasts';
 	import { fade, fly } from 'svelte/transition';
 	import { onMount } from 'svelte';
-
+	import { get } from 'svelte/store';
 	let mounted = $state(false);
 	let transactions = $state<TreasuryTransaction[]>([]);
 	let isLoadingData = $state(true);
@@ -19,31 +19,41 @@
 	let sortDirection = $state<'desc' | 'asc'>('desc');
 	const newTransactionAction = 'transactions:new';
 	const exportTransactionsAction = 'transactions:export-csv';
+	
+	const wallet = $derived($walletSession);
+	
 	const filteredTransactions = $derived(
-		[...transactions]
-			.filter((tx) => statusFilter === 'all' || tx.umbraStatus === statusFilter || tx.privacyStatus === statusFilter)
-			.sort((left, right) => {
-				const diff = new Date(right.date).getTime() - new Date(left.date).getTime();
-				return sortDirection === 'desc' ? diff : -diff;
-			})
+		(() => {
+			const filtered = [...transactions]
+				.filter((tx) => statusFilter === 'all' || tx.umbraStatus === statusFilter || tx.privacyStatus === statusFilter)
+				.sort((left, right) => {
+					const diff = new Date(right.date).getTime() - new Date(left.date).getTime();
+					return sortDirection === 'desc' ? diff : -diff;
+				});
+			console.log('[Transactions] Filter:', statusFilter, 'Total:', transactions.length, 'Filtered:', filtered.length);
+			return filtered;
+		})()
 	);
 
 	onMount(async () => {
 		mounted = true;
-		const dao = await daoSession.loadDemoDao();
+		const dao = get(daoSession).dao;
 
 		if (!dao) {
-			emptyMessage = 'No data yet. Connect a wallet or create a DAO treasury to begin.';
+			emptyMessage = 'No data yet. Connect a wallet to begin.';
 			isLoadingData = false;
 			return;
 		}
 
 		try {
+			console.log('[Transactions] Fetching transactions for DAO:', dao.id);
 			const response = await getDaoTransactions(dao.id);
 			transactions = response.transactions;
-			emptyMessage = 'No data yet.';
+			console.log('[Transactions] Loaded', transactions.length, 'transactions');
+			emptyMessage = 'No transactions yet. Create your first private transaction to get started.';
 		} catch (error) {
-			emptyMessage = error instanceof Error ? error.message : 'No data yet.';
+			console.error('[Transactions] Failed to load:', error);
+			emptyMessage = error instanceof Error ? error.message : 'Failed to load transactions.';
 		} finally {
 			isLoadingData = false;
 		}
@@ -100,6 +110,10 @@
 			URL.revokeObjectURL(url);
 			toasts.add('Ledger exported to CSV successfully.', 'success');
 		});
+	}
+
+	function shortAddress(address: string) {
+		return `${address.slice(0, 6)}...${address.slice(-4)}`;
 	}
 </script>
 
@@ -198,7 +212,7 @@
 										</td>
 										<td class="px-6 py-4 text-right">
 											<span class="text-sm font-bold {tx.type === 'income' ? 'text-emerald-400' : 'text-white'}">
-												{formatCurrency(tx.amountHint)}
+												{formatCurrency(tx.amountHint, tx.token)}
 											</span>
 										</td>
 										<td class="px-6 py-4 text-right">

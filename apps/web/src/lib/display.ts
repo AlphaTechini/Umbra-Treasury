@@ -1,15 +1,17 @@
-export function formatCurrency(value: number | string | null | undefined) {
+export function formatCurrency(value: number | string | null | undefined, token?: string | null) {
 	const amount = typeof value === 'string' ? Number(value) : value;
 
 	if (!Number.isFinite(amount)) {
 		return 'No data yet';
 	}
 
-	return new Intl.NumberFormat('en-US', {
-		style: 'currency',
-		currency: 'USD',
-		maximumFractionDigits: 0
-	}).format(amount as number);
+	// If token is provided, show it as suffix
+	if (token) {
+		return `${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 6 })} ${token.toUpperCase()}`;
+	}
+
+	// Default to SOL if no token specified
+	return `${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 6 })} SOL`;
 }
 
 export function formatDate(value: string | null | undefined) {
