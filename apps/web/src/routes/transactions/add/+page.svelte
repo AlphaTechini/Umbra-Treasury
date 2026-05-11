@@ -4,12 +4,31 @@
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import WalletButton from '$lib/components/WalletButton.svelte';
 	import { pendingRequestActions, runRequestAction } from '$lib/loading';
-	import { daoSession, signWalletAuthorization, walletSession } from '$lib/session';
+	import { daoSession, requireActiveUmbraSession, signWalletAuthorization, walletSession } from '$lib/session';
+	import { depositIntoEncryptedBalance, withdrawFromEncryptedBalance } from '$lib/umbra';
 	import { toasts } from '$lib/toasts';
 	import { get } from 'svelte/store';
 	import { ArrowLeft, Shield, ChevronDown, Lock } from 'lucide-svelte';
 
 	const sendPrivateTransactionAction = 'transactions:send-private';
+
+	// Token mint addresses for devnet
+	const TOKEN_MINTS = {
+		sol: 'So11111111111111111111111111111111111111112',
+		usdc: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU',
+		usdt: 'EJwZgeZrdC8TXTQbQBoL6bfuAnFUUy1PVCMB4DYPzVaS',
+		wsol: 'So11111111111111111111111111111111111111112'
+	};
+
+	// Token decimals
+	const TOKEN_DECIMALS = {
+		sol: 9,
+		usdc: 6,
+		usdt: 6,
+		wsol: 9
+	};
+
+	let transactionType = $state<'income' | 'expense'>('expense');
 
 	async function handleSendPrivateTransaction(event: SubmitEvent) {
 		event.preventDefault();
@@ -22,33 +41,147 @@
 			}
 
 			const formData = new FormData(event.currentTarget as HTMLFormElement);
+			const recipient = String(formData.get('recipient') ?? '').trim();
 			const amount = String(formData.get('amount') ?? '').trim();
-			const token = String(formData.get('token') ?? 'usdc').trim();
+			const token = String(formData.get('token') ?? 'sol').trim();
 			const category = String(formData.get('category') ?? 'ops').trim();
+
+			// Validate inputs
+			if (!amount || parseFloat(amount) <= 0) {
+				throw new Error('Enter a valid amount');
+			}
+
+			if (transactionType === 'expense' && !recipient) {
+				throw new Error('Enter a recipient address for expenses');
+			}
+
+			// Get Umbra session
+			toasts.add('Initializing Umbra session...', 'info');
+			const umbraSession = await requireActiveUmbraSession();
+
+			// Convert amount to base units
+			const mintAddress = TOKEN_MINTS[token as keyof typeof TOKEN_MINTS];
+			const decimals = TOKEN_DECIMALS[token as keyof typeof TOKEN_DECIMALS];
+			const amountBaseUnits = parseBaseUnits(amount, decimals);
+
+			let result;
+			let umbraOperationType: 'deposit' | 'withdraw';
+
+			if (transactionType === 'income') {
+				// Deposit into encrypted balance
+				toasts.add('Depositing into encrypted balance...', 'info');
+				result = await depositIntoEncryptedBalance(umbraSession, {
+					destinationAddress: walletAddress,
+					mintAddress,
+					amountBaseUnits
+				});
+				umbraOperationType = 'deposit';
+			} else {
+				// Withdraw from encrypted balance to recipient
+				toasts.add('Withdrawing from encrypted balance...', 'info');
+				result = await withdrawFromEncryptedBalance(umbraSession, {
+					destinationAddress: recipient,
+					mintAddress,
+					amountBaseUnits
+				});
+				umbraOperationType = 'withdraw';
+			}
+
+			// Extract operation references
+			const umbraOperationRefs = getUmbraOperationRefs(result, {
+				source: 'frontend_real_umbra_transaction',
+				mintAddress,
+				destinationAddress: transactionType === 'income' ? walletAddress : recipient
+			});
+
+			// Sign wallet authorization
 			const walletAuthorization = await signWalletAuthorization({
 				action: 'treasury_transaction:create',
 				daoId: dao.id,
 				walletAddress
 			});
 
-			toasts.add('Wallet authorization signed. Recording private transaction metadata...', 'info');
+			// Save transaction to database
+			toasts.add('Recording transaction metadata...', 'info');
 			await createTransaction(dao.id, {
 				createdByWalletAddress: walletAddress,
 				walletAuthorization,
-				type: 'expense',
+				type: transactionType,
 				category: toTransactionCategory(category),
 				token,
-				...(amount ? { amountHint: amount } : {}),
+				amountHint: amount,
 				date: new Date().toISOString(),
-				umbraOperationType: 'mock',
-				umbraOperationRefs: {
-					source: 'frontend_private_transaction_form',
-					note: 'Recipient and memo are intentionally not stored until encrypted metadata is implemented.'
-				}
+				umbraOperationType,
+				umbraOperationRefs
 			});
-			toasts.add('Private transaction metadata recorded.', 'success');
+
+			toasts.add('Private transaction completed successfully!', 'success');
 			await goto('/transactions');
 		});
+	}
+
+	function parseBaseUnits(amount: string, decimals: number): bigint {
+		const num = parseFloat(amount);
+		if (!Number.isFinite(num) || num <= 0) {
+			throw new Error('Invalid amount');
+		}
+		return BigInt(Math.floor(num * Math.pow(10, decimals)));
+	}
+
+	function getUmbraOperationRefs(result: unknown, extra: Record<string, unknown>) {
+		const references = extractReferenceStrings(result);
+		return {
+			...extra,
+			resultType: getResultType(result),
+			signatures: references.signatures,
+			transactionReferences: references.transactionReferences
+		};
+	}
+
+	function extractReferenceStrings(value: unknown) {
+		const signatures = new Set<string>();
+		const transactionReferences = new Set<string>();
+
+		function visit(nextValue: unknown, key = '') {
+			if (typeof nextValue === 'string') {
+				const lowerKey = key.toLowerCase();
+				if (lowerKey.includes('signature')) {
+					signatures.add(nextValue);
+				}
+				if (lowerKey.includes('transaction') || lowerKey.includes('signature')) {
+					transactionReferences.add(nextValue);
+				}
+				return;
+			}
+
+			if (Array.isArray(nextValue)) {
+				nextValue.forEach((item) => visit(item, key));
+				return;
+			}
+
+			if (nextValue && typeof nextValue === 'object') {
+				for (const [childKey, childValue] of Object.entries(nextValue)) {
+					visit(childValue, childKey);
+				}
+			}
+		}
+
+		visit(value);
+
+		return {
+			signatures: Array.from(signatures),
+			transactionReferences: Array.from(transactionReferences)
+		};
+	}
+
+	function getResultType(result: unknown) {
+		if (Array.isArray(result)) {
+			return 'array';
+		}
+		if (result && typeof result === 'object') {
+			return result.constructor.name;
+		}
+		return typeof result;
 	}
 
 	function toTransactionCategory(value: string) {
@@ -96,16 +229,39 @@
 					class="bg-[#18181b] border border-[#27272a] rounded-xl p-6 flex flex-col gap-5"
 					onsubmit={handleSendPrivateTransaction}
 				>
-					<!-- Recipient Address -->
+					<!-- Transaction Type -->
+					<div class="flex flex-col gap-2">
+						<label class="font-label-mono text-label-mono text-zinc-400 uppercase">Transaction Type</label>
+						<div class="grid grid-cols-2 gap-2">
+							<label class="cursor-pointer">
+								<input type="radio" bind:group={transactionType} value="expense" class="peer sr-only" />
+								<div class="border border-[#27272a] rounded-lg px-4 py-3 text-center font-body-md text-body-md text-zinc-400 peer-checked:border-[#10b981] peer-checked:text-[#10b981] peer-checked:bg-[#10b981]/5 hover:border-zinc-500 transition-all">
+									Expense (Withdraw)
+								</div>
+							</label>
+							<label class="cursor-pointer">
+								<input type="radio" bind:group={transactionType} value="income" class="peer sr-only" />
+								<div class="border border-[#27272a] rounded-lg px-4 py-3 text-center font-body-md text-body-md text-zinc-400 peer-checked:border-[#10b981] peer-checked:text-[#10b981] peer-checked:bg-[#10b981]/5 hover:border-zinc-500 transition-all">
+									Income (Deposit)
+								</div>
+							</label>
+						</div>
+					</div>
+
+					<!-- Recipient Address (only for expenses) -->
+					{#if transactionType === 'expense'}
 					<div class="flex flex-col gap-2">
 						<label class="font-label-mono text-label-mono text-zinc-400 uppercase" for="recipient">Recipient Address</label>
 						<input
 							id="recipient"
+							name="recipient"
 							type="text"
 							placeholder="Enter Solana address here..."
+							required
 							class="bg-[#0d0e15] border border-[#27272a] focus:border-zinc-400 focus:ring-0 rounded-lg px-4 py-3 font-body-md text-body-md text-zinc-200 placeholder:text-zinc-600 transition-colors"
 						/>
 					</div>
+					{/if}
 
 					<!-- Amount + Token -->
 					<div class="flex flex-col gap-2">
@@ -179,7 +335,13 @@
 							class="flex-1 bg-[#10b981] text-[#002113] font-bold py-3 rounded-lg text-sm tracking-wide hover:bg-[#4edea3] transition-colors active:scale-[0.99] flex items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-60"
 						>
 							<Lock size={18} />
-							{$pendingRequestActions[sendPrivateTransactionAction] ? 'Sending...' : 'Send Private Transaction'}
+							{#if $pendingRequestActions[sendPrivateTransactionAction]}
+								Processing...
+							{:else if transactionType === 'income'}
+								Deposit to Encrypted Balance
+							{:else}
+								Send Private Transaction
+							{/if}
 						</button>
 					</div>
 				</form>
