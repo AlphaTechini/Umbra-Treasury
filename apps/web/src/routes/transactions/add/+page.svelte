@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { createTransaction } from '$lib/api/transactions';
 	import Sidebar from '$lib/components/Sidebar.svelte';
+	import WalletButton from '$lib/components/WalletButton.svelte';
 	import { pendingRequestActions, runRequestAction } from '$lib/loading';
 	import { daoSession, signWalletAuthorization, walletSession } from '$lib/session';
 	import { toasts } from '$lib/toasts';
@@ -76,9 +77,7 @@
 				</a>
 				<h1 class="font-h3 text-h3 text-white">Send Private Transaction</h1>
 			</div>
-			<a href="/connect-wallet" class="bg-[#10b981] text-[#002113] font-bold px-4 py-1.5 rounded text-xs hover:bg-[#4edea3] transition-colors active:scale-[0.98]">
-				Connect Wallet
-			</a>
+			<WalletButton />
 		</header>
 
 		<main class="flex-1 overflow-y-auto p-6">

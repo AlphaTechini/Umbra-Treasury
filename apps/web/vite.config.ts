@@ -27,13 +27,31 @@ export default defineConfig(() => {
 			exclude: [
 				'@umbra-privacy/sdk',
 				'@umbra-privacy/web-zk-prover'
-			]
+			],
+			esbuildOptions: {
+				target: 'esnext',
+				supported: {
+					'top-level-await': true
+				}
+			}
 		},
 		ssr: {
 			noExternal: ['lucide-svelte']
 		},
 		esbuild: {
 			logOverride: { 'this-is-undefined-in-esm': 'silent' }
+		},
+		build: {
+			target: 'esnext',
+			minify: 'esbuild',
+			rollupOptions: {
+				output: {
+					manualChunks: {
+						'umbra-sdk': ['@umbra-privacy/sdk'],
+						'umbra-prover': ['@umbra-privacy/web-zk-prover']
+					}
+				}
+			}
 		}
 	};
 });

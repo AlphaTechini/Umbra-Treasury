@@ -16,7 +16,7 @@ const POPULAR_WALLETS = [
 ];
 
 // Each wallet injects itself differently into window
-function getProvider(adapter: string): any {
+export function getProvider(adapter: string): any {
 	if (!browser) return null;
 	const w = window as any;
 
@@ -81,4 +81,9 @@ export function getWalletInstallUrl(walletName: string): string {
 		'Coinbase Wallet':'https://www.coinbase.com/wallet/downloads',
 	};
 	return urls[walletName] ?? 'https://solana.com/ecosystem/explore?categories=wallet';
+}
+
+export function getWalletAdapter(walletName: string): string | null {
+	const wallet = POPULAR_WALLETS.find((w) => w.name === walletName);
+	return wallet?.adapter ?? null;
 }

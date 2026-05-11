@@ -2,6 +2,7 @@
 	import { createTransaction } from '$lib/api/transactions';
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import UmbraStatusPanel from '$lib/components/UmbraStatusPanel.svelte';
+	import WalletButton from '$lib/components/WalletButton.svelte';
 	import { formatDateTime } from '$lib/display';
 	import { pendingRequestActions, runRequestAction } from '$lib/loading';
 	import { daoSession, requireActiveUmbraSession, signWalletAuthorization, walletSession } from '$lib/session';
@@ -26,6 +27,10 @@
 	let operationTitle = $state('Umbra client ready');
 	let operationDetail = $state('Connect a wallet, then run encrypted balance operations from this page.');
 	let operationReference = $state('');
+
+	const depositAction = 'umbra:deposit';
+	const queryAction = 'umbra:query';
+	const withdrawAction = 'umbra:withdraw';
 
 	const depositAction = 'umbra:deposit';
 	const queryAction = 'umbra:query';
@@ -283,9 +288,7 @@
 			<div>
 				<h1 class="font-h3 text-h3 text-white">Real Umbra Operations</h1>
 			</div>
-			<a href="/connect-wallet" class="bg-[#10b981] text-[#002113] font-bold px-4 py-1.5 rounded text-xs hover:bg-[#4edea3] transition-colors active:scale-[0.98]">
-				Connect Wallet
-			</a>
+			<WalletButton />
 		</header>
 
 		<main class="flex-1 overflow-y-auto p-6 space-y-6">

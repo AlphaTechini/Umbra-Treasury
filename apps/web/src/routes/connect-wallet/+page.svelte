@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { pendingRequestActions, runRequestAction } from '$lib/loading';
-	import { walletSession } from '$lib/session';
+	import { walletSession, daoSession } from '$lib/session';
 	import { toasts } from '$lib/toasts';
 	import { detectInstalledWallets, connectDirectWallet, getWalletInstallUrl, type SolanaWallet } from '$lib/umbra/directWalletDetection';
 	import { createUser } from '$lib/api/users';
+	import { createDao, getOwnerDaoByWalletAddress } from '$lib/api/daos';
+	import { ApiClientError } from '$lib/api/http';
 	import { onMount } from 'svelte';
 	import { Wallet, Shield, ArrowLeft, ChevronRight, ExternalLink, Ghost, Flame, Backpack, Sparkles, CircleDollarSign } from 'lucide-svelte';
 
@@ -35,15 +37,76 @@
 				walletSession.connect(walletAddress, wallet.name);
 				
 				toasts.add(`Connected! Address: ${walletAddress.slice(0, 8)}...`, 'success');
+				
+				// Redirect immediately - don't block on DAO creation
 				await goto('/dashboard');
+				
+				// Load or create DAO in background (non-blocking)
+				loadOrCreateDaoInBackground(walletAddress);
 			} catch (error: any) {
 				toasts.add(error.message || `Failed to connect ${wallet.name}`, 'error');
 			}
 		});
 	}
 
-	function getInstallUrl(walletName: string): string {
-		return getWalletInstallUrl(walletName);
+	function loadOrCreateDaoInBackground(walletAddress: string) {
+		// Fire and forget - don't await
+		loadOrCreateDao(walletAddress)
+			.then((dao) => {
+				daoSession.setActiveDao(dao);
+				toasts.add('Treasury workspace ready', 'success');
+			})
+			.catch((error) => {
+				console.error('Failed to load/create DAO:', error);
+				// Don't show error toast - user is already on dashboard
+				// They can manually create a DAO if needed
+			});
+	}
+
+	async function loadOrCreateDao(walletAddress: string) {
+		try {
+			const { dao } = await getOwnerDaoByWalletAddress(walletAddress);
+			return dao;
+		} catch (error) {
+			if (!(error instanceof ApiClientError) || error.status !== 404) {
+				throw error;
+			}
+		}
+
+		const { dao } = await createDao({
+			ownerWalletAddress: walletAddress,
+			name: `Umbra Treasury ${shortAddress(walletAddress)}`,
+			slug: createDefaultDaoSlug(walletAddress),
+			treasuryAddress: walletAddress,
+			baseToken: 'usdc',
+			description: 'Default private treasury workspace created from wallet connection.',
+			isPublic: true
+		});
+
+		return dao;
+	}
+
+	function createDefaultDaoSlug(walletAddress: string) {
+		const slugSafeAddress = walletAddress.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+		return `dao-${slugSafeAddress.slice(0, 20)}-${stableAddressHash(walletAddress)}`;
+	}
+
+	function shortAddress(walletAddress: string) {
+		if (walletAddress.length <= 12) {
+			return walletAddress;
+		}
+
+		return `${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}`;
+	}
+
+	function stableAddressHash(walletAddress: string) {
+		let hash = 5381;
+
+		for (let index = 0; index < walletAddress.length; index += 1) {
+			hash = (hash * 33) ^ walletAddress.charCodeAt(index);
+		}
+
+		return (hash >>> 0).toString(36);
 	}
 
 	onMount(() => {

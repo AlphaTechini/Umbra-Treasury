@@ -12,7 +12,20 @@ import { registerTransactionRoutes } from "./routes/transactions.js";
 import { registerUserRoutes } from "./routes/users.js";
 
 export async function buildApp(): Promise<FastifyInstance> {
-  const app = Fastify({ logger: true });
+  const app = Fastify({ 
+    logger: {
+      transport: env.NODE_ENV === 'development' ? {
+        target: 'pino-pretty',
+        options: {
+          colorize: true,
+          translateTime: 'HH:MM:ss',
+          ignore: 'pid,hostname',
+          singleLine: false,
+          messageFormat: '{levelLabel} - {msg}'
+        }
+      } : undefined
+    }
+  });
 
   await app.register(cors, {
     origin: env.CORS_ORIGIN,

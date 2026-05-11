@@ -1,6 +1,7 @@
 import { get } from 'svelte/store';
 import type { WalletAuthorization } from '$lib/api/types';
 import { connectCompatibleWallet } from '$lib/umbra';
+import { createSignerFromDirectWallet } from '$lib/umbra/directWalletSigner';
 import { walletSession } from './walletSession';
 
 const appName = 'umbra-treasury-disclosure';
@@ -35,7 +36,16 @@ export async function signWalletAuthorization(input: SignWalletAuthorizationInpu
 		throw new Error('Reconnect your wallet before signing this action.');
 	}
 
-	const connectedWallet = await connectCompatibleWallet(session.walletName, walletAddress);
+	// Try Wallet Standard first, fallback to direct wallet
+	let signer;
+	try {
+		const connectedWallet = await connectCompatibleWallet(session.walletName, walletAddress);
+		signer = connectedWallet.signer;
+	} catch {
+		// Fallback to direct wallet
+		signer = createSignerFromDirectWallet(session.walletName, walletAddress);
+	}
+
 	const issuedAt = new Date();
 	const expiresAt = new Date(issuedAt.getTime() + authorizationWindowMs);
 	const message = JSON.stringify({
@@ -47,7 +57,7 @@ export async function signWalletAuthorization(input: SignWalletAuthorizationInpu
 		issuedAt: issuedAt.toISOString(),
 		expiresAt: expiresAt.toISOString()
 	});
-	const signedMessage = await connectedWallet.signer.signMessage(new TextEncoder().encode(message));
+	const signedMessage = await signer.signMessage(new TextEncoder().encode(message));
 
 	if (signedMessage.signer !== walletAddress) {
 		throw new Error('Wallet signed with a different account than the active session.');
