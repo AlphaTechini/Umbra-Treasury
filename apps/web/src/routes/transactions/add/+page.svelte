@@ -133,12 +133,48 @@
 
 	function getUmbraOperationRefs(result: unknown, extra: Record<string, unknown>) {
 		const references = extractReferenceStrings(result);
+		const viewingKeys = extractViewingKeys(result);
 		return {
 			...extra,
 			resultType: getResultType(result),
 			signatures: references.signatures,
-			transactionReferences: references.transactionReferences
+			transactionReferences: references.transactionReferences,
+			viewingKeys: viewingKeys.length > 0 ? viewingKeys : undefined,
+			fullResult: result // Store full result for debugging/disclosure
 		};
+	}
+
+	function extractViewingKeys(value: unknown): string[] {
+		const keys = new Set<string>();
+
+		function visit(nextValue: unknown, key = '') {
+			if (typeof nextValue === 'string') {
+				const lowerKey = key.toLowerCase();
+				// Look for viewing key patterns
+				if (lowerKey.includes('viewing') && lowerKey.includes('key')) {
+					keys.add(nextValue);
+				}
+				// Also check for hierarchical key patterns
+				if (lowerKey.includes('hierarchical') && lowerKey.includes('key')) {
+					keys.add(nextValue);
+				}
+				return;
+			}
+
+			if (Array.isArray(nextValue)) {
+				nextValue.forEach((item) => visit(item, key));
+				return;
+			}
+
+			if (nextValue && typeof nextValue === 'object') {
+				for (const [childKey, childValue] of Object.entries(nextValue)) {
+					visit(childValue, childKey);
+				}
+			}
+		}
+
+		visit(value);
+		return Array.from(keys);
 	}
 
 	function extractReferenceStrings(value: unknown) {
