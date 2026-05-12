@@ -65,6 +65,15 @@ export async function listDisclosureRequestsForDao(daoId: string) {
     .orderBy(desc(disclosureRequests.createdAt));
 }
 
+export async function listDisclosureRequestsByWallet(walletAddress: string) {
+  return db
+    .select({ request: disclosureRequests, dao: daos })
+    .from(disclosureRequests)
+    .innerJoin(daos, eq(disclosureRequests.daoId, daos.id))
+    .where(eq(disclosureRequests.requesterContact, walletAddress))
+    .orderBy(desc(disclosureRequests.createdAt));
+}
+
 export async function reviewDisclosureRequest(input: {
   id: string;
   status: "approved" | "rejected";

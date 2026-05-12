@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import {
   getDaoDisclosureRequests,
+  getDisclosureRequestsByWallet,
   reviewDisclosure,
   submitDisclosureRequest,
 } from "../services/disclosureService.js";
@@ -15,6 +16,10 @@ const daoIdParamsSchema = z.object({
 const reviewParamsSchema = z.object({
   daoId: z.string().min(1),
   requestId: z.string().min(1),
+});
+
+const walletAddressParamsSchema = z.object({
+  walletAddress: z.string().min(1),
 });
 
 const createDisclosureSchema = z.object({
@@ -50,6 +55,13 @@ export async function registerDisclosureRoutes(app: FastifyInstance): Promise<vo
   app.get("/daos/:daoId/disclosure-requests", async (request) => {
     const params = parseParams(daoIdParamsSchema, request.params);
     const disclosureRequests = await getDaoDisclosureRequests(params.daoId);
+
+    return { disclosureRequests };
+  });
+
+  app.get("/disclosure-requests/by-wallet/:walletAddress", async (request) => {
+    const params = parseParams(walletAddressParamsSchema, request.params);
+    const disclosureRequests = await getDisclosureRequestsByWallet(params.walletAddress);
 
     return { disclosureRequests };
   });

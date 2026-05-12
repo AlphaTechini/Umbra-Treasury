@@ -377,6 +377,7 @@
 				<div class="mt-6 text-center font-label-mono text-label-mono text-zinc-500">
 					Your request will be reviewed by the DAO owner
 				</div>
+				{/if}
 			</div>
 		{/if}
 	</main>

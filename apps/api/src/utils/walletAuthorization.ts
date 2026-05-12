@@ -66,31 +66,73 @@ export function verifyWalletAuthorization(
 }
 
 function parseAuthorizationMessage(message: string): WalletAuthorizationMessage {
+  // Try parsing as JSON first (old format)
   let parsed: unknown;
 
   try {
     parsed = JSON.parse(message);
+    
+    const result = z
+      .object({
+        app: z.literal(appName),
+        action: z.string().min(1),
+        walletAddress: z.string().min(1),
+        daoId: z.string().min(1).optional(),
+        requestId: z.string().min(1).optional(),
+        issuedAt: z.string().datetime(),
+        expiresAt: z.string().datetime(),
+      })
+      .safeParse(parsed);
+
+    if (result.success) {
+      return result.data;
+    }
   } catch {
-    throw badRequest("Wallet authorization message must be valid JSON");
+    // Not JSON, try parsing as human-readable format
   }
 
-  const result = z
-    .object({
-      app: z.literal(appName),
-      action: z.string().min(1),
-      walletAddress: z.string().min(1),
-      daoId: z.string().min(1).optional(),
-      requestId: z.string().min(1).optional(),
-      issuedAt: z.string().datetime(),
-      expiresAt: z.string().datetime(),
-    })
-    .safeParse(parsed);
+  // Parse human-readable format
+  const lines = message.split('\n').map(line => line.trim()).filter(line => line);
+  const data: Record<string, string> = {};
 
-  if (!result.success) {
+  for (const line of lines) {
+    const colonIndex = line.indexOf(':');
+    if (colonIndex > 0) {
+      const key = line.substring(0, colonIndex).trim();
+      const value = line.substring(colonIndex + 1).trim();
+      data[key] = value;
+    }
+  }
+
+  // Map human-readable keys to expected format
+  const actionMap: Record<string, string> = {
+    'Create Treasury Transaction': 'treasury_transaction:create',
+    'Review Disclosure Request': 'disclosure:review',
+    'Generate Mock Report': 'report:mock:create',
+    'Generate Umbra Compliance Report': 'report:umbra:create',
+  };
+
+  const actionKey = data['Action'];
+  const action = actionKey ? (actionMap[actionKey] || actionKey) : undefined;
+  const walletAddress = data['Wallet'];
+  const daoId = data['DAO'];
+  const requestId = data['Request'];
+  const issuedAt = data['Issued'];
+  const expiresAt = data['Expires'];
+
+  if (!action || !walletAddress || !issuedAt || !expiresAt) {
     throw badRequest("Wallet authorization message is missing required fields");
   }
 
-  return result.data;
+  return {
+    app: appName,
+    action,
+    walletAddress,
+    ...(daoId ? { daoId } : {}),
+    ...(requestId ? { requestId } : {}),
+    issuedAt,
+    expiresAt,
+  };
 }
 
 function assertExpectedMessage(message: WalletAuthorizationMessage, expected: WalletAuthorizationExpectation): void {

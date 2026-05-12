@@ -48,15 +48,25 @@ export async function signWalletAuthorization(input: SignWalletAuthorizationInpu
 
 	const issuedAt = new Date();
 	const expiresAt = new Date(issuedAt.getTime() + authorizationWindowMs);
-	const message = JSON.stringify({
-		app: appName,
-		action: input.action,
-		walletAddress,
-		...(input.daoId ? { daoId: input.daoId } : {}),
-		...(input.requestId ? { requestId: input.requestId } : {}),
-		issuedAt: issuedAt.toISOString(),
-		expiresAt: expiresAt.toISOString()
-	});
+	
+	const messageLines = [
+		'Umbra Treasury Disclosure',
+		'',
+		`Action: ${formatActionLabel(input.action)}`,
+		`Wallet: ${walletAddress}`,
+	];
+
+	if (input.daoId) {
+		messageLines.push(`DAO: ${input.daoId}`);
+	}
+
+	if (input.requestId) {
+		messageLines.push(`Request: ${input.requestId}`);
+	}
+
+	messageLines.push('', `Issued: ${issuedAt.toISOString()}`, `Expires: ${expiresAt.toISOString()}`);
+
+	const message = messageLines.join('\n');
 	const signedMessage = await signer.signMessage(new TextEncoder().encode(message));
 
 	if (signedMessage.signer !== walletAddress) {
@@ -68,6 +78,16 @@ export async function signWalletAuthorization(input: SignWalletAuthorizationInpu
 		message,
 		signature: bytesToBase64(signedMessage.signature)
 	};
+}
+
+function formatActionLabel(action: WalletAuthorizationAction): string {
+	const labels: Record<WalletAuthorizationAction, string> = {
+		'treasury_transaction:create': 'Create Treasury Transaction',
+		'disclosure:review': 'Review Disclosure Request',
+		'report:mock:create': 'Generate Mock Report',
+		'report:umbra:create': 'Generate Umbra Compliance Report'
+	};
+	return labels[action] || action;
 }
 
 function bytesToBase64(bytes: Uint8Array) {

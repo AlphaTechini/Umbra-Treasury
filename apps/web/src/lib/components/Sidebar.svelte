@@ -1,20 +1,70 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { LayoutDashboard, Receipt, Lock, Eye, FileText } from 'lucide-svelte';
+	import { LayoutDashboard, Receipt, Lock, Eye, FileText, ClipboardCheck } from 'lucide-svelte';
+	import { walletSession, daoSession } from '$lib/session';
+	import { getDisclosureRequestsByWallet } from '$lib/api/disclosures';
+	import { onMount } from 'svelte';
 
-	const navItems = [
+	let isAuditor = $state(false);
+	let isOwner = $state(false);
+	
+	const wallet = $derived($walletSession);
+	const dao = $derived($daoSession.dao);
+
+	// Check roles on mount and when wallet changes
+	onMount(async () => {
+		await checkRoles();
+	});
+
+	$effect(() => {
+		if (wallet.walletAddress) {
+			checkRoles();
+		}
+	});
+
+	async function checkRoles() {
+		if (!wallet.walletAddress) {
+			isAuditor = false;
+			isOwner = false;
+			return;
+		}
+
+		// Check if wallet is a DAO owner
+		isOwner = dao?.ownerId === wallet.walletAddress;
+
+		// Check if wallet has made any disclosure requests (is an auditor)
+		try {
+			const response = await getDisclosureRequestsByWallet(wallet.walletAddress);
+			isAuditor = response.disclosureRequests.length > 0;
+		} catch {
+			isAuditor = false;
+		}
+	}
+
+	const ownerNavItems = [
 		{ href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
 		{ href: '/transactions', icon: Receipt, label: 'Transactions' },
 		{ href: '/umbra', icon: Lock, label: 'Umbra Flows' },
 		{ href: '/disclosures', icon: Eye, label: 'Disclosure Requests' },
 		{ href: '/reports', icon: FileText, label: 'Reports' },
 	];
+
+	const auditorNavItems = [
+		{ href: '/auditor/requests', icon: ClipboardCheck, label: 'My Requests' },
+	];
+
+	// Show auditor view ONLY if they're an auditor and NOT an owner
+	const navItems = $derived(
+		isAuditor && !isOwner ? auditorNavItems : ownerNavItems
+	);
 </script>
 
 <nav class="hidden md:flex h-screen w-64 border-r border-[#27272a] fixed left-0 top-0 bg-[#09090b] shadow-none flex-col gap-1 py-6 z-50">
 	<div class="px-6 mb-8">
 		<h1 class="font-h3 text-h3 text-zinc-50 font-bold tracking-tighter">Umbra Treasury</h1>
-		<p class="font-label-mono text-label-mono text-zinc-400 mt-1">Institutional DAO</p>
+		<p class="font-label-mono text-label-mono text-zinc-400 mt-1">
+			{isAuditor && !isOwner ? 'Auditor Portal' : 'Treasury Portal'}
+		</p>
 	</div>
 	<div class="flex-1 overflow-y-auto flex flex-col gap-1">
 		{#each navItems as item}

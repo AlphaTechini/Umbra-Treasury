@@ -2,6 +2,7 @@ import { createAccessLog } from "../repositories/accessLogRepository.js";
 import {
   createDisclosureRequest,
   findDisclosureRequestById,
+  listDisclosureRequestsByWallet,
   listDisclosureRequestsForDao,
   reviewDisclosureRequest,
 } from "../repositories/disclosureRequestRepository.js";
@@ -69,6 +70,11 @@ export async function getDaoDisclosureRequests(daoId: string) {
   return listDisclosureRequestsForDao(daoId);
 }
 
+export async function getDisclosureRequestsByWallet(walletAddress: string) {
+  const results = await listDisclosureRequestsByWallet(walletAddress);
+  return results.map((row) => ({ ...row.request, dao: row.dao }));
+}
+
 export async function reviewDisclosure(daoId: string, requestId: string, input: ReviewDisclosureRequestBody) {
   verifyWalletAuthorization(input.walletAuthorization, {
     action: "disclosure:review",
@@ -115,6 +121,22 @@ export async function reviewDisclosure(daoId: string, requestId: string, input: 
       disclosureMethod: input.disclosureMethod ?? null,
     },
   });
+
+  // Auto-generate report if approved
+  if (status === "approved") {
+    const { generateMockDisclosureReport } = await import("./reportService.js");
+    
+    try {
+      await generateMockDisclosureReport(request.id, {
+        generatedByWalletAddress: input.reviewerWalletAddress,
+        walletAuthorization: input.walletAuthorization,
+        generatedByUsername: input.reviewerUsername,
+      });
+    } catch (error) {
+      console.error("Failed to auto-generate report:", error);
+      // Don't fail the approval if report generation fails
+    }
+  }
 
   return reviewed;
 }

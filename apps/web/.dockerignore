@@ -3,6 +3,8 @@ node_modules
 **/node_modules
 
 # Build output
+build
+.svelte-kit
 dist
 *.tsbuildinfo
 
@@ -38,6 +40,8 @@ yarn-error.log*
 # Testing
 coverage
 .nyc_output
+playwright-report
+test-results
 
 # Misc
 *.md
@@ -46,3 +50,5 @@ coverage
 .prettierrc
 .eslintrc*
 tsconfig.json
+vite.config.ts.timestamp-*
+stitch_screens

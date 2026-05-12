@@ -37,6 +37,13 @@ export function getDaoDisclosureRequests(daoId: string, fetcher?: typeof fetch) 
 	);
 }
 
+export function getDisclosureRequestsByWallet(walletAddress: string, fetcher?: typeof fetch) {
+	return apiGet<{ disclosureRequests: DisclosureRequest[] }>(
+		`/disclosure-requests/by-wallet/${encodeURIComponent(walletAddress)}`,
+		{ fetcher }
+	);
+}
+
 export function reviewDisclosureRequest(
 	daoId: string,
 	requestId: string,

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { getDaoDisclosureRequests, reviewDisclosureRequest } from '$lib/api/disclosures';
-	import { generateMockDisclosureReport } from '$lib/api/reports';
 	import type { DisclosureRequest } from '$lib/api/types';
 	import { createDao, getOwnerDaoByWalletAddress } from '$lib/api/daos';
 	import { ApiClientError } from '$lib/api/http';
@@ -86,10 +85,6 @@
 		return `disclosures:review:${requestId}:${status}`;
 	}
 
-	function getMockReportAction(requestId: string) {
-		return `reports:mock:${requestId}`;
-	}
-
 	function getStatusColor(status: string) {
 		switch (status) {
 			case 'approved':
@@ -127,32 +122,7 @@
 			disclosureRequests = disclosureRequests.map((request) =>
 				request.id === requestId ? response.disclosureRequest : request
 			);
-			toasts.add(`Disclosure request ${status}.`, 'success');
-		});
-	}
-
-	async function handleMockReportGeneration(requestId: string) {
-		await runRequestAction(getMockReportAction(requestId), async () => {
-			const walletAddress = get(walletSession).walletAddress;
-
-			if (!walletAddress) {
-				throw new Error('Connect the DAO owner wallet before generating reports.');
-			}
-
-			const walletAuthorization = await signWalletAuthorization({
-				action: 'report:mock:create',
-				requestId,
-				walletAddress
-			});
-			await generateMockDisclosureReport(requestId, {
-				generatedByWalletAddress: walletAddress,
-				walletAuthorization
-			});
-
-			disclosureRequests = disclosureRequests.map((request) =>
-				request.id === requestId ? { ...request, status: 'fulfilled' } : request
-			);
-			toasts.add('Mock disclosure report generated.', 'success');
+			toasts.add(`Disclosure request ${status}. Report ${status === 'approved' ? 'generated automatically' : 'not generated'}.`, 'success');
 		});
 	}
 
@@ -265,21 +235,12 @@
 														{$pendingRequestActions[rejectAction] ? 'Rejecting...' : 'Reject'}
 													</button>
 												</div>
+											{:else if req.fulfilledReportId}
+												<a href={`/reports/${req.fulfilledReportId}`} class="text-xs text-[#10b981] hover:underline font-bold">View Report</a>
 											{:else if req.status === 'approved'}
-												{@const mockReportAction = getMockReportAction(req.id)}
-												<button
-													onclick={() => handleMockReportGeneration(req.id)}
-													disabled={$pendingRequestActions[mockReportAction]}
-													class="text-xs text-[#10b981] hover:underline font-bold disabled:cursor-not-allowed disabled:opacity-60"
-												>
-													{$pendingRequestActions[mockReportAction] ? 'Generating...' : 'Generate Mock Report'}
-												</button>
+												<span class="text-xs text-yellow-500">Generating report...</span>
 											{:else}
-												{#if req.fulfilledReportId}
-													<a href={`/reports/${req.fulfilledReportId}`} class="text-xs text-[#10b981] hover:underline font-bold">Open Report</a>
-												{:else}
-													<span class="text-xs text-zinc-500">No action</span>
-												{/if}
+												<span class="text-xs text-zinc-500">—</span>
 											{/if}
 										</td>
 									</tr>
