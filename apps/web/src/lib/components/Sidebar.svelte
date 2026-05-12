@@ -1,11 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { LayoutDashboard, Receipt, Lock, Eye, FileText, Key } from 'lucide-svelte';
+	import { LayoutDashboard, Receipt, Lock, Eye, FileText } from 'lucide-svelte';
 
 	const navItems = [
 		{ href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
 		{ href: '/transactions', icon: Receipt, label: 'Transactions' },
-		{ href: '/viewing-keys', icon: Key, label: 'Viewing Keys' },
 		{ href: '/umbra', icon: Lock, label: 'Umbra Flows' },
 		{ href: '/disclosures', icon: Eye, label: 'Disclosure Requests' },
 		{ href: '/reports', icon: FileText, label: 'Reports' },

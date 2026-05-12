@@ -134,6 +134,12 @@
 	function getUmbraOperationRefs(result: unknown, extra: Record<string, unknown>) {
 		const references = extractReferenceStrings(result);
 		const viewingKeys = extractViewingKeys(result);
+		
+		// Debug logging to see what we're actually getting
+		console.log('[Umbra Operation] Full result:', result);
+		console.log('[Umbra Operation] Extracted viewing keys:', viewingKeys);
+		console.log('[Umbra Operation] Extracted references:', references);
+		
 		return {
 			...extra,
 			resultType: getResultType(result),
