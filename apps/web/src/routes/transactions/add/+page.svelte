@@ -5,7 +5,7 @@
 	import WalletButton from '$lib/components/WalletButton.svelte';
 	import { pendingRequestActions, runRequestAction } from '$lib/loading';
 	import { daoSession, requireActiveUmbraSession, signWalletAuthorization, walletSession } from '$lib/session';
-	import { depositIntoEncryptedBalance, withdrawFromEncryptedBalance } from '$lib/umbra';
+	import { clearActiveUmbraClientSession, depositIntoEncryptedBalance, withdrawFromEncryptedBalance } from '$lib/umbra';
 	import { toasts } from '$lib/toasts';
 	import { get } from 'svelte/store';
 	import { ArrowLeft, Shield, ChevronDown, Lock } from 'lucide-svelte';
@@ -54,6 +54,9 @@
 			if (transactionType === 'expense' && !recipient) {
 				throw new Error('Enter a recipient address for expenses');
 			}
+
+			// Clear any cached Umbra session to ensure we use current network config
+			clearActiveUmbraClientSession();
 
 			// Get Umbra session
 			toasts.add('Initializing Umbra session...', 'info');
@@ -194,84 +197,101 @@
 </script>
 
 <svelte:head>
-	<title>Add Private Transaction – Umbra Treasury</title>
+	<title>{transactionType === 'income' ? 'Deposit Funds' : 'Send Private Transaction'} – Umbra Treasury</title>
 	<meta name="description" content="Send a private transaction via the Umbra shielded protocol." />
 </svelte:head>
 
 <div class="flex h-screen overflow-hidden bg-[#09090b]">
 	<Sidebar />
 
-	<div class="flex-1 md:ml-64 flex flex-col min-h-screen">
+	<div class="flex-1 md:ml-64 flex flex-col h-screen">
 		<!-- TopAppBar -->
-		<header class="bg-[#09090b] border-b border-[#27272a] flex justify-between items-center w-full px-6 h-16 sticky top-0 z-40">
+		<header class="bg-[#09090b] border-b border-[#27272a] flex justify-between items-center w-full px-6 h-16 flex-shrink-0 sticky top-0 z-40">
 			<div class="flex items-center gap-4">
 				<a href="/dashboard" class="text-zinc-400 hover:text-zinc-100 hover:bg-[#18181b] transition-colors p-1.5 rounded-lg">
 					<ArrowLeft size={20} />
 				</a>
-				<h1 class="font-h3 text-h3 text-white">Send Private Transaction</h1>
+				<h1 class="font-h3 text-h3 text-white">
+					{transactionType === 'income' ? 'Deposit Funds' : 'Send Private Transaction'}
+				</h1>
 			</div>
 			<WalletButton />
 		</header>
 
-		<main class="flex-1 overflow-y-auto p-6">
+		<main class="flex-1 overflow-y-auto p-6 pb-8">
 			<div class="max-w-2xl mx-auto">
 				<!-- Privacy Badge -->
 				<div class="bg-[#10b981]/5 border border-[#10b981]/20 rounded-lg p-4 mb-6 flex items-start gap-3">
 					<Shield class="text-[#10b981] mt-0.5" size={20} fill="currentColor" />
 					<div>
 						<p class="font-data-point text-data-point text-[#10b981] mb-1">Shielded Protocol Active</p>
-						<p class="font-body-md text-body-md text-zinc-400">This transaction will be private by default. Recipient, amount, and memo are encrypted on-chain.</p>
+						{#if transactionType === 'income'}
+							<p class="font-body-md text-body-md text-zinc-400">Deposit funds into your encrypted treasury balance. Funds will be private and only you can access them.</p>
+						{:else}
+							<p class="font-body-md text-body-md text-zinc-400">Send funds privately from your encrypted balance to a recipient. The transaction is shielded on-chain.</p>
+						{/if}
 					</div>
 				</div>
 
 				<!-- Form Card -->
 				<form
-					class="bg-[#18181b] border border-[#27272a] rounded-xl p-6 flex flex-col gap-5"
+					class="bg-[#18181b] border border-[#27272a] rounded-xl p-6 flex flex-col gap-5 mb-6"
 					onsubmit={handleSendPrivateTransaction}
 				>
 					<!-- Transaction Type -->
 					<div class="flex flex-col gap-2">
 						<label class="font-label-mono text-label-mono text-zinc-400 uppercase">Transaction Type</label>
+						<p class="text-xs text-zinc-500 mb-1">Choose whether you're depositing funds into your treasury or sending funds to someone.</p>
 						<div class="grid grid-cols-2 gap-2">
 							<label class="cursor-pointer">
 								<input type="radio" bind:group={transactionType} value="expense" class="peer sr-only" />
 								<div class="border border-[#27272a] rounded-lg px-4 py-3 text-center font-body-md text-body-md text-zinc-400 peer-checked:border-[#10b981] peer-checked:text-[#10b981] peer-checked:bg-[#10b981]/5 hover:border-zinc-500 transition-all">
-									Expense (Withdraw)
+									<div class="font-bold">Expense (Withdraw)</div>
+									<div class="text-xs mt-1 text-zinc-500">Send to recipient</div>
 								</div>
 							</label>
 							<label class="cursor-pointer">
 								<input type="radio" bind:group={transactionType} value="income" class="peer sr-only" />
 								<div class="border border-[#27272a] rounded-lg px-4 py-3 text-center font-body-md text-body-md text-zinc-400 peer-checked:border-[#10b981] peer-checked:text-[#10b981] peer-checked:bg-[#10b981]/5 hover:border-zinc-500 transition-all">
-									Income (Deposit)
+									<div class="font-bold">Income (Deposit)</div>
+									<div class="text-xs mt-1 text-zinc-500">Add to treasury</div>
 								</div>
 							</label>
 						</div>
 					</div>
 
 					<!-- Recipient Address (only for expenses) -->
-					{#if transactionType === 'expense'}
-					<div class="flex flex-col gap-2">
+					<div class="flex flex-col gap-2" class:hidden={transactionType === 'income'}>
 						<label class="font-label-mono text-label-mono text-zinc-400 uppercase" for="recipient">Recipient Address</label>
+						<p class="text-xs text-zinc-500 mb-1">The Solana wallet address that will receive the funds privately.</p>
 						<input
 							id="recipient"
 							name="recipient"
 							type="text"
-							placeholder="Enter Solana address here..."
-							required
-							class="bg-[#0d0e15] border border-[#27272a] focus:border-zinc-400 focus:ring-0 rounded-lg px-4 py-3 font-body-md text-body-md text-zinc-200 placeholder:text-zinc-600 transition-colors"
+							placeholder="e.g., 7XEkYVAuz9DuyMwkgZ4gxNLihPEDtA2R9uBMUg6YWrX6"
+							required={transactionType === 'expense'}
+							disabled={transactionType === 'income'}
+							class="bg-[#0d0e15] border border-[#27272a] focus:border-zinc-400 focus:ring-0 rounded-lg px-4 py-3 font-mono text-sm text-zinc-200 placeholder:text-zinc-600 transition-colors"
 						/>
 					</div>
-					{/if}
 
 					<!-- Amount + Token -->
 					<div class="flex flex-col gap-2">
-						<label class="font-label-mono text-label-mono text-zinc-400 uppercase" for="amount">Amount</label>
+						<label class="font-label-mono text-label-mono text-zinc-400 uppercase" for="amount">Amount & Token</label>
+						<p class="text-xs text-zinc-500 mb-1">
+							{#if transactionType === 'income'}
+								How much you want to deposit into your encrypted treasury balance.
+							{:else}
+								How much you want to send to the recipient.
+							{/if}
+						</p>
 						<div class="flex gap-2">
 							<input
 								id="amount"
 								name="amount"
 								type="text"
 								placeholder="0.00"
+								required
 								class="flex-1 bg-[#0d0e15] border border-[#27272a] focus:border-zinc-400 focus:ring-0 rounded-lg px-4 py-3 font-data-point text-data-point text-zinc-200 placeholder:text-zinc-600 transition-colors"
 							/>
 							<div class="relative w-36">
@@ -282,27 +302,16 @@
 									<option value="sol">SOL</option>
 									<option value="usdc">USDC</option>
 									<option value="usdt">USDT</option>
-									<option value="wsol">wSOL</option>
 								</select>
 								<ChevronDown class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" size={16} />
 							</div>
 						</div>
 					</div>
 
-					<!-- Memo / Note -->
-					<div class="flex flex-col gap-2">
-						<label class="font-label-mono text-label-mono text-zinc-400 uppercase" for="memo">Memo (encrypted)</label>
-						<input
-							id="memo"
-							type="text"
-							placeholder="Purpose of this transaction..."
-							class="bg-[#0d0e15] border border-[#27272a] focus:border-zinc-400 focus:ring-0 rounded-lg px-4 py-3 font-body-md text-body-md text-zinc-200 placeholder:text-zinc-600 transition-colors"
-						/>
-					</div>
-
 					<!-- Category -->
 					<div class="flex flex-col gap-2">
 						<label class="font-label-mono text-label-mono text-zinc-400 uppercase" for="category">Category</label>
+						<p class="text-xs text-zinc-500 mb-1">What type of transaction is this? Used for reporting and summaries.</p>
 						<div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
 							{#each ['Payroll', 'Grants', 'Infrastructure', 'Operations'] as cat, i}
 								<label class="cursor-pointer">
@@ -313,15 +322,6 @@
 								</label>
 							{/each}
 						</div>
-					</div>
-
-					<!-- Viewing Key Disclosure Option -->
-					<div class="border-t border-[#27272a] pt-5 flex flex-col gap-3">
-						<div class="flex items-center gap-3">
-							<input type="checkbox" id="generate-key" class="w-4 h-4 accent-[#10b981]" />
-							<label for="generate-key" class="font-body-md text-body-md text-zinc-300 cursor-pointer">Generate viewing key for this transaction</label>
-						</div>
-						<p class="font-body-md text-body-md text-zinc-500 text-xs ml-7">A one-time key that allows a specified party to decrypt this transaction only.</p>
 					</div>
 
 					<!-- Action Buttons -->
