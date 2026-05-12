@@ -9,7 +9,8 @@
 	import { daoSession, walletSession } from '$lib/session';
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
-	import { Plus, Landmark, Lock, Eye, ShieldCheck, LogOut } from 'lucide-svelte';
+	import { Plus, Landmark, Lock, Eye, ShieldCheck, LogOut, ExternalLink, Copy } from 'lucide-svelte';
+	import { toasts } from '$lib/toasts';
 
 	let summary = $state<PublicSummary | null>(null);
 	let transactions = $state<TreasuryTransaction[]>([]);
@@ -84,6 +85,16 @@
 	function shortAddress(address: string) {
 		return `${address.slice(0, 6)}...${address.slice(-4)}`;
 	}
+
+	function copyPublicLink() {
+		const dao = get(daoSession).dao;
+		if (dao) {
+			const publicUrl = `${window.location.origin}/daos/${dao.slug}`;
+			navigator.clipboard.writeText(publicUrl);
+			toasts.add('Public DAO link copied to clipboard!', 'success');
+		}
+	}
+
 </script>
 
 <svelte:head>
@@ -98,6 +109,16 @@
 		<header class="bg-[#09090b] border-b border-[#27272a] flex justify-between items-center w-full px-6 h-16 sticky top-0 z-40">
 			<div class="flex items-center flex-1"></div>
 			<div class="flex items-center gap-3">
+				{#if summary?.dao}
+					<button
+						onclick={copyPublicLink}
+						class="flex items-center gap-2 bg-[#18181b] border border-[#27272a] px-4 py-2 rounded text-sm text-zinc-300 hover:text-white hover:border-[#10b981] transition-colors"
+						title="Copy public DAO link"
+					>
+						<ExternalLink size={16} />
+						<span class="hidden sm:inline">Share Public Link</span>
+					</button>
+				{/if}
 				{#if wallet.status === 'connected' && wallet.walletAddress}
 					<div class="flex items-center gap-2 bg-[#18181b] border border-[#27272a] px-4 py-1.5 rounded">
 						<span class="text-[#10b981] text-xs font-mono">{shortAddress(wallet.walletAddress)}</span>

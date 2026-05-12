@@ -5,15 +5,19 @@
 	import { createDisclosureRequest } from '$lib/api/disclosures';
 	import type { Dao, DisclosureReason, DisclosureScope } from '$lib/api/types';
 	import { pendingRequestActions, runRequestAction } from '$lib/loading';
+	import { walletSession } from '$lib/session';
 	import { toasts } from '$lib/toasts';
 	import { onMount } from 'svelte';
-	import { FileText, Info, ChevronDown, Send, ArrowLeft } from 'lucide-svelte';
+	import { get } from 'svelte';
+	import { FileText, Info, ChevronDown, Send, ArrowLeft, Wallet } from 'lucide-svelte';
 
 	let dao = $state<Dao | null>(null);
 	let isLoadingDao = $state(true);
 	let error = $state<string | null>(null);
+	let requiresWallet = $state(true);
 
 	const slug = $derived($page.params.slug);
+	const wallet = $derived($walletSession);
 	const submitDisclosureRequestAction = 'disclosures:request:create';
 
 	onMount(async () => {
@@ -45,6 +49,11 @@
 			return;
 		}
 
+		if (requiresWallet && wallet.status !== 'connected') {
+			toasts.add('Please connect your wallet to request disclosure', 'error');
+			return;
+		}
+
 		await runRequestAction(submitDisclosureRequestAction, async () => {
 			const formData = new FormData(event.currentTarget as HTMLFormElement);
 			const requesterName = getRequiredFormValue(formData, 'name', 'Name');
@@ -70,7 +79,8 @@
 			await createDisclosureRequest(dao!.id, {
 				requesterName,
 				...(getOptionalFormValue(formData, 'organization') ? { requesterOrganization: getOptionalFormValue(formData, 'organization') } : {}),
-				...(getOptionalFormValue(formData, 'contact') ? { requesterContact: getOptionalFormValue(formData, 'contact') } : {}),
+				...(wallet.status === 'connected' && wallet.walletAddress ? { requesterContact: wallet.walletAddress } : 
+					getOptionalFormValue(formData, 'contact') ? { requesterContact: getOptionalFormValue(formData, 'contact') } : {}),
 				reason,
 				...(getOptionalFormValue(formData, 'message') ? { message: getOptionalFormValue(formData, 'message') } : {}),
 				requestedScope,
@@ -80,8 +90,14 @@
 				...(endDate ? { endDate } : {})
 			});
 
-			toasts.add('Disclosure request submitted successfully! The DAO owner will review your request.', 'success');
-			await goto(`/daos/${dao!.slug}`);
+			toasts.add('Disclosure request submitted successfully! You will be notified when the DAO owner reviews your request.', 'success');
+			
+			// Redirect to auditor dashboard if wallet connected, otherwise back to public page
+			if (wallet.status === 'connected') {
+				await goto('/auditor/requests');
+			} else {
+				await goto(`/daos/${dao!.slug}`);
+			}
 		});
 	}
 
@@ -115,6 +131,10 @@
 		if (value === 'daterange') return 'date_range';
 		if (value === 'category' || value === 'full_report') return value;
 		return 'full_report';
+	}
+
+	async function handleConnectWallet() {
+		await goto('/connect-wallet?returnTo=' + encodeURIComponent($page.url.pathname));
 	}
 </script>
 
@@ -168,13 +188,34 @@
 						<FileText class="text-[#10b981]" size={22} fill="currentColor" />
 					</div>
 					<h1 class="font-h2 text-h2 text-white mb-2">Request Transaction Disclosure</h1>
-					<p class="font-body-md text-body-md text-[#10b981] bg-[#10b981]/10 px-4 py-2 border border-[#10b981]/20 rounded inline-flex items-center gap-2">
-						<Info size={16} />
-						No wallet required • DAO owner will review your request
-					</p>
+					
+					{#if wallet.status !== 'connected'}
+						<div class="bg-[#3b82f6]/10 border border-[#3b82f6]/20 rounded-lg p-4 mb-4 max-w-md">
+							<p class="font-body-md text-body-md text-[#3b82f6] flex items-center gap-2 mb-3">
+								<Info size={16} />
+								Wallet Connection Required
+							</p>
+							<p class="text-sm text-zinc-400 mb-4">
+								To request disclosure, you must connect your wallet. This ensures only you can access the approved reports.
+							</p>
+							<button
+								onclick={handleConnectWallet}
+								class="w-full flex items-center justify-center gap-2 bg-[#10b981] text-[#002113] font-bold px-6 py-3 rounded-lg hover:bg-[#4edea3] transition-colors"
+							>
+								<Wallet size={18} />
+								Connect Wallet to Continue
+							</button>
+						</div>
+					{:else}
+						<p class="font-body-md text-body-md text-[#10b981] bg-[#10b981]/10 px-4 py-2 border border-[#10b981]/20 rounded inline-flex items-center gap-2">
+							<Info size={16} />
+							Request will be tied to your wallet: {wallet.walletAddress?.slice(0, 6)}...{wallet.walletAddress?.slice(-4)}
+						</p>
+					{/if}
 				</div>
 
 				<!-- Form -->
+				{#if wallet.status === 'connected'}
 				<form
 					class="bg-[#18181b] border border-[#27272a] rounded-xl p-6 flex flex-col gap-6"
 					onsubmit={handleSubmitDisclosureRequest}
@@ -203,15 +244,16 @@
 					</div>
 
 					<div class="flex flex-col gap-2">
-						<label class="font-label-mono text-label-mono text-zinc-400" for="contact">Contact Email *</label>
+						<label class="font-label-mono text-label-mono text-zinc-400" for="contact">Your Wallet Address</label>
 						<input
 							id="contact"
 							name="contact"
-							type="email"
-							required
-							placeholder="audit@example.com"
-							class="bg-[#09090b] border border-[#27272a] rounded font-body-md text-body-md text-white px-4 py-3 focus:ring-1 focus:ring-[#10b981] focus:border-[#10b981] placeholder:text-zinc-600 transition-colors"
+							type="text"
+							readonly
+							value={wallet.walletAddress}
+							class="bg-[#0d0e15] border border-[#27272a] rounded font-mono text-sm text-zinc-400 px-4 py-3 cursor-not-allowed"
 						/>
+						<p class="text-xs text-zinc-500">Approved reports will be accessible only to this wallet</p>
 					</div>
 
 					<div class="flex flex-col gap-2">
